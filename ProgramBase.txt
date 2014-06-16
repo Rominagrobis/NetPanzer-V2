@@ -1,0 +1,40 @@
+First understand that we have 3 stages of work .. 
+
+First stage : MasterServer
+
+  Masterserver are a network of 2 or more servers used to register and track games server. 
+  
+  They have a separate channel of communication, hold a database for themself, gameservers and players.
+  
+  The communication port used for master to master will be 6060 (arbitrary choose as a free of use channel port)
+  
+  Online configuration can be hold by a Light http server include in the code at port 8010 (arbitrary)
+  
+  In the database, we have 3 tables. 
+  
+    First table : master_data
+          <1> Number     integer
+          <2> Name       char
+          <3> IP         char
+          <4> NetName    char
+          <5> last_seen  date
+          <6> config     (to be defined)
+          
+    Second table : server_data
+          <1> Number     integer
+          <2> Name       char
+          <3> IP         char
+          <4> NetName    char
+          <5> Country    char 
+          <6> Admin      char                     (admin mail adress)
+          <7> config     (to be defined)
+        
+   Third table : Client_data
+          <1> Number     integer
+          <2> User       char             
+          <3> IP         char
+          <4> NetName    char 
+          <5> Country    char
+          <6> config     (to be defined)
+          
+          

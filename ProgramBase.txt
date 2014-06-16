@@ -10,6 +10,9 @@ First stage : MasterServer
   
   Online configuration can be hold by a Light http server include in the code at port 8010 (arbitrary)
   
+  All comunications between masters and servers , masters and clients, servers and clients will be encrypted using
+  the libgcrypt library
+  
   In the database, we have 3 tables. 
   
     First table : master_data

@@ -1,0 +1,106 @@
+<html lang="en">
+<head>
+<title>Random-Number Subsystem Architecture - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Architecture.html#Architecture" title="Architecture">
+<link rel="prev" href="Prime_002dNumber_002dGenerator-Subsystem-Architecture.html#Prime_002dNumber_002dGenerator-Subsystem-Architecture" title="Prime-Number-Generator Subsystem Architecture">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Random-Number-Subsystem-Architecture"></a>
+<a name="Random_002dNumber-Subsystem-Architecture"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Prime_002dNumber_002dGenerator-Subsystem-Architecture.html#Prime_002dNumber_002dGenerator-Subsystem-Architecture">Prime-Number-Generator Subsystem Architecture</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Architecture.html#Architecture">Architecture</a>
+<hr>
+</div>
+
+<h3 class="section">16.6 Random-Number Subsystem Architecture</h3>
+
+<p>Libgcrypt provides 3 levels or random quality: The level
+<code>GCRY_VERY_STRONG_RANDOM</code> usually used for key generation, the
+level <code>GCRY_STRONG_RANDOM</code> for all other strong random
+requirements and the function <code>gcry_create_nonce</code> which is used
+for weaker usages like nonces.  There is also a level
+<code>GCRY_WEAK_RANDOM</code> which in general maps to
+<code>GCRY_STRONG_RANDOM</code> except when used with the function
+<code>gcry_mpi_randomize</code>, where it randomizes an
+multi-precision-integer using the <code>gcry_create_nonce</code> function.
+
+<p class="noindent">There are two distinct random generators available:
+
+     <ul>
+<li>The Continuously Seeded Pseudo Random Number Generator (CSPRNG), which
+is based on the classic GnuPG derived big pool implementation. 
+Implemented in <code>random/random-csprng.c</code> and used by default. 
+<li>A FIPS approved ANSI X9.31 PRNG using AES with a 128 bit key. Implemented in
+<code>random/random-fips.c</code> and used if Libgcrypt is in FIPS mode. 
+</ul>
+
+<p class="noindent">Both generators make use of so-called entropy gathering modules:
+
+     <dl>
+<dt>rndlinux<dd>Uses the operating system provided
+<samp><span class="file">/dev/random</span></samp> and <samp><span class="file">/dev/urandom</span></samp> devices.
+
+     <br><dt>rndunix<dd>Runs several operating system commands to collect entropy from sources
+like virtual machine and process statistics.  It is a kind of
+poor-man's <code>/dev/random</code> implementation. It is not available in
+FIPS mode.
+
+     <br><dt>rndegd<dd>Uses the operating system provided Entropy Gathering Daemon (EGD). 
+The EGD basically uses the same algorithms as rndunix does.  However
+as a system daemon it keeps on running and thus can serve several
+processes requiring entropy input and does not waste collected entropy
+if the application does not need all the collected entropy. It is not
+available in FIPS mode.
+
+     <br><dt>rndw32<dd>Targeted for the Microsoft Windows OS.  It uses certain properties of
+that system and is the only gathering module available for that OS.
+
+     <br><dt>rndhw<dd>Extra module to collect additional entropy by utilizing a hardware
+random number generator.  As of now the only supported hardware RNG is
+the Padlock engine of VIA (Centaur) CPUs.  It is not available in FIPS
+mode.
+
+   </dl>
+
+<ul class="menu">
+<li><a accesskey="1" href="CSPRNG-Description.html#CSPRNG-Description">CSPRNG Description</a>:       Description of the CSPRNG. 
+<li><a accesskey="2" href="FIPS-PRNG-Description.html#FIPS-PRNG-Description">FIPS PRNG Description</a>:    Description of the FIPS X9.31 PRNG. 
+</ul>
+
+   </body></html>
+

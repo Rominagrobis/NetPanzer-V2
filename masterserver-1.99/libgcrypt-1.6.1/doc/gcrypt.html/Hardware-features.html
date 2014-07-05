@@ -1,0 +1,88 @@
+<html lang="en">
+<head>
+<title>Hardware features - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preparation.html#Preparation" title="Preparation">
+<link rel="prev" href="Enabling-FIPS-mode.html#Enabling-FIPS-mode" title="Enabling FIPS mode">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Hardware-features"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Enabling-FIPS-mode.html#Enabling-FIPS-mode">Enabling FIPS mode</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preparation.html#Preparation">Preparation</a>
+<hr>
+</div>
+
+<h3 class="section">2.7 How to disable hardware features</h3>
+
+<p><a name="index-hardware-features-6"></a>
+Libgcrypt makes use of certain hardware features.  If the use of a
+feature is not desired it may be either be disabled by a program or
+globally using a configuration file.  The currently supported features
+are
+
+     <dl>
+<dt><code>padlock-rng</code><br><dt><code>padlock-aes</code><br><dt><code>padlock-sha</code><br><dt><code>padlock-mmul</code><br><dt><code>intel-cpu</code><br><dt><code>intel-bmi2</code><br><dt><code>intel-ssse3</code><br><dt><code>intel-pclmul</code><br><dt><code>intel-aesni</code><br><dt><code>intel-rdrand</code><br><dt><code>intel-avx</code><br><dt><code>intel-avx2</code><br><dt><code>arm-neon</code><dd></dl>
+
+   <p>To disable a feature for all processes using Libgcrypt 1.6 or newer,
+create the file <samp><span class="file">/etc/gcrypt/hwf.deny</span></samp> and put each feature not
+to be used on a single line.  Empty lines, white space, and lines
+prefixed with a hash mark are ignored.  The file should be world
+readable.
+
+   <p>To disable a feature specifically for a program that program must tell
+it Libgcrypt before before calling <code>gcry_check_version</code>. 
+Example:<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>
+
+<pre class="example">       gcry_control (GCRYCTL_DISABLE_HWF, "intel-rdrand", NULL);
+</pre>
+   <p class="noindent">To print the list of active features you may use this command:
+
+<pre class="example">       mpicalc --print-config | grep ^hwflist: | tr : '\n' | tail -n +2
+</pre>
+   <!-- ********************************************************** -->
+<!-- *******************  General  **************************** -->
+<!-- ********************************************************** -->
+   <div class="footnote">
+<hr>
+<h4>Notes de bas de page</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> NB. Libgcrypt uses the RDRAND feature only as one
+source of entropy.  A CPU with a broken RDRAND will thus not
+compromise of the random number generator</p>
+
+   <hr></div>
+
+   </body></html>
+

@@ -1,0 +1,95 @@
+<html lang="en">
+<head>
+<title>Enabling FIPS mode - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preparation.html#Preparation" title="Preparation">
+<link rel="prev" href="Multi_002dThreading.html#Multi_002dThreading" title="Multi-Threading">
+<link rel="next" href="Hardware-features.html#Hardware-features" title="Hardware features">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Enabling-FIPS-mode"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Hardware-features.html#Hardware-features">Hardware features</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Multi_002dThreading.html#Multi_002dThreading">Multi-Threading</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preparation.html#Preparation">Preparation</a>
+<hr>
+</div>
+
+<h3 class="section">2.6 How to enable the FIPS mode</h3>
+
+<p><a name="index-FIPS-mode-3"></a><a name="index-FIPS-140-4"></a>
+Libgcrypt may be used in a FIPS 140-2 mode.  Note, that this does not
+necessary mean that Libcgrypt is an appoved FIPS 140-2 module.  Check the
+NIST database at <a href="http://csrc.nist.gov/groups/STM/cmvp/">http://csrc.nist.gov/groups/STM/cmvp/</a> to see what
+versions of Libgcrypt are approved.
+
+   <p>Because FIPS 140 has certain restrictions on the use of cryptography
+which are not always wanted, Libgcrypt needs to be put into FIPS mode
+explicitly.  Three alternative mechanisms are provided to switch
+Libgcrypt into this mode:
+
+     <ul>
+<li>If the file <samp><span class="file">/proc/sys/crypto/fips_enabled</span></samp> exists and contains a
+numeric value other than <code>0</code>, Libgcrypt is put into FIPS mode at
+initialization time.  Obviously this works only on systems with a
+<code>proc</code> file system (i.e. GNU/Linux).
+
+     <li>If the file <samp><span class="file">/etc/gcrypt/fips_enabled</span></samp> exists, Libgcrypt is put
+into FIPS mode at initialization time.  Note that this filename is
+hardwired and does not depend on any configuration options.
+
+     <li>If the application requests FIPS mode using the control command
+<code>GCRYCTL_FORCE_FIPS_MODE</code>.  This must be done prior to any
+initialization (i.e. before <code>gcry_check_version</code>).
+
+   </ul>
+
+   <p><a name="index-Enforced-FIPS-mode-5"></a>
+In addition to the standard FIPS mode, Libgcrypt may also be put into
+an Enforced FIPS mode by writing a non-zero value into the file
+<samp><span class="file">/etc/gcrypt/fips_enabled</span></samp> or by using the control command
+<code>GCRYCTL_SET_ENFORCED_FIPS_FLAG</code> before any other calls to
+libgcrypt.  The Enforced FIPS mode helps to detect applications
+which don't fulfill all requirements for using
+Libgcrypt in FIPS mode (see <a href="FIPS-Mode.html#FIPS-Mode">FIPS Mode</a>).
+
+   <p>Once Libgcrypt has been put into FIPS mode, it is not possible to
+switch back to standard mode without terminating the process first. 
+If the logging verbosity level of Libgcrypt has been set to at least
+2, the state transitions and the self-tests are logged.
+
+   </body></html>
+

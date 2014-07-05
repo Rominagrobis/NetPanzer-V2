@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+<title>Key Derivation - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Message-Authentication-Codes.html#Message-Authentication-Codes" title="Message Authentication Codes">
+<link rel="next" href="Random-Numbers.html#Random-Numbers" title="Random Numbers">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Key-Derivation"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Random-Numbers.html#Random-Numbers">Random Numbers</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Message-Authentication-Codes.html#Message-Authentication-Codes">Message Authentication Codes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">9 Key Derivation</h2>
+
+<p><acronym>Libgcypt</acronym> provides a general purpose function to derive keys
+from strings.
+
+<div class="defun">
+&mdash; Function: gpg_error_t <b>gcry_kdf_derive</b> (<var> const&nbsp;void&nbsp;*passphrase<!-- /@w -->, size_t&nbsp;passphraselen<!-- /@w -->, int&nbsp;algo<!-- /@w -->, int&nbsp;subalgo<!-- /@w -->, const&nbsp;void&nbsp;*salt<!-- /@w -->, size_t&nbsp;saltlen<!-- /@w -->, unsigned&nbsp;long&nbsp;iterations<!-- /@w -->, size_t&nbsp;keysize<!-- /@w -->, void&nbsp;*keybuffer<!-- /@w --> </var>)<var><a name="index-gcry_005fkdf_005fderive-176"></a></var><br>
+<blockquote>
+        <p>Derive a key from a passphrase.  <var>keysize</var> gives the requested
+size of the keys in octets.  <var>keybuffer</var> is a caller provided
+buffer filled on success with the derived key.  The input passphrase
+is taken from <var>passphrase</var> which is an arbitrary memory buffer of
+<var>passphraselen</var> octets.  <var>algo</var> specifies the KDF algorithm to
+use; see below.  <var>subalgo</var> specifies an algorithm used internally
+by the KDF algorithms; this is usually a hash algorithm but certain
+KDF algorithms may use it differently.  <var>salt</var> is a salt of length
+<var>saltlen</var> octets, as needed by most KDF algorithms. 
+<var>iterations</var> is a positive integer parameter to most KDFs.
+
+     <p class="noindent">On success 0 is returned; on failure an error code.
+
+     <p class="noindent">Currently supported KDFs (parameter <var>algo</var>):
+
+          <dl>
+<dt><code>GCRY_KDF_SIMPLE_S2K</code><dd>The OpenPGP simple S2K algorithm (cf. RFC4880).  Its use is strongly
+deprecated.  <var>salt</var> and <var>iterations</var> are not needed and may be
+passed as <code>NULL</code>/<code>0</code>.
+
+          <br><dt><code>GCRY_KDF_SALTED_S2K</code><dd>The OpenPGP salted S2K algorithm (cf. RFC4880).  Usually not used. 
+<var>iterations</var> is not needed and may be passed as <code>0</code>.  <var>saltlen</var>
+must be given as 8.
+
+          <br><dt><code>GCRY_KDF_ITERSALTED_S2K</code><dd>The OpenPGP iterated+salted S2K algorithm (cf. RFC4880).  This is the
+default for most OpenPGP applications.  <var>saltlen</var> must be given as
+8.  Note that OpenPGP defines a special encoding of the
+<var>iterations</var>; however this function takes the plain decoded
+iteration count.
+
+          <br><dt><code>GCRY_KDF_PBKDF2</code><dd>The PKCS#5 Passphrase Based Key Derivation Function number 2.
+
+          <br><dt><code>GCRY_KDF_SCRYPT</code><dd>The SCRYPT Key Derivation Function.  The subalgorithm is used to specify
+the CPU/memory cost parameter N, and the number of iterations
+is used for the parallelization parameter p.  The block size is fixed
+at 8 in the current implementation.
+
+        </dl>
+        </p></blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- *******************  Random  ***************************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

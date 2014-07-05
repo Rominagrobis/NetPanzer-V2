@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+<title>FIPS PRNG Description - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture" title="Random-Number Subsystem Architecture">
+<link rel="prev" href="CSPRNG-Description.html#CSPRNG-Description" title="CSPRNG Description">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="FIPS-PRNG-Description"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="CSPRNG-Description.html#CSPRNG-Description">CSPRNG Description</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture">Random-Number Subsystem Architecture</a>
+<hr>
+</div>
+
+<h4 class="subsection">16.6.2 Description of the FIPS X9.31 PRNG</h4>
+
+<p>The core of this deterministic random number generator is implemented
+according to the document &ldquo;NIST-Recommended Random Number Generator
+Based on ANSI X9.31 Appendix A.2.4 Using the 3-Key Triple DES and AES
+Algorithms&rdquo;, dated 2005-01-31.  This implementation uses the AES
+variant.
+
+   <p>The generator is based on contexts to utilize the same core functions
+for all random levels as required by the high-level interface.  All
+random generators return their data in 128 bit blocks.  If the caller
+requests less bits, the extra bits are not used.  The key for each
+generator is only set once at the first time a generator context is
+used.  The seed value is set along with the key and again after 1000
+output blocks.
+
+   <p>On Unix like systems the <code>GCRY_VERY_STRONG_RANDOM</code> and
+<code>GCRY_STRONG_RANDOM</code> generators are keyed and seeded using the
+rndlinux module with the <samp><span class="file">/dev/random</span></samp> device. Thus these
+generators may block until the OS kernel has collected enough entropy. 
+When used with Microsoft Windows the rndw32 module is used instead.
+
+   <p>The generator used for <code>gcry_create_nonce</code> is keyed and seeded
+from the <code>GCRY_STRONG_RANDOM</code> generator.  Thus is may also block
+if the <code>GCRY_STRONG_RANDOM</code> generator has not yet been used
+before and thus gets initialized on the first use by
+<code>gcry_create_nonce</code>.  This special treatment is justified by the
+weaker requirements for a nonce generator and to save precious kernel
+entropy for use by the &ldquo;real&rdquo; random generators.
+
+   <p>A self-test facility uses a separate context to check the
+functionality of the core X9.31 functions using a known answers test. 
+During runtime each output block is compared to the previous one to
+detect a stuck generator.
+
+   <p>The DT value for the generator is made up of the current time down to
+microseconds (if available) and a free running 64 bit counter.  When
+used with the test context the DT value is taken from the context and
+incremented on each use.
+
+<!-- @node Helper Subsystems Architecture -->
+<!-- @section Helper Subsystems Architecture -->
+<!-- There are a few smaller subsystems which are mainly used internally by -->
+<!-- Libgcrypt but also available to applications. -->
+<!-- @menu -->
+<!-- * S-expression Subsystem Architecture::   Details about the S-expression architecture. -->
+<!-- * Memory Subsystem Architecture::         Details about the memory allocation architecture. -->
+<!-- * Miscellaneous Subsystems Architecture:: Details about other subsystems. -->
+<!-- @end menu -->
+<!-- @node S-expression Subsystem Architecture -->
+<!-- @subsection S-expression Subsystem Architecture -->
+<!-- Libgcrypt provides an interface to S-expression to create and parse -->
+<!-- them.  To use an S-expression with Libgcrypt it needs first be -->
+<!-- converted into the internal representation used by Libgcrypt (the type -->
+<!-- @code{gcry_sexp_t}).  The conversion functions support a large subset -->
+<!-- of the S-expression specification and further feature a printf like -->
+<!-- function to convert a list of big integers or other binary data into -->
+<!-- an S-expression. -->
+<!-- Libgcrypt currently implements S-expressions using a tagged linked -->
+<!-- list.  However this is not exposed to an application and may be -->
+<!-- changed in future releases to reduce overhead when already working -->
+<!-- with canonically encoded S-expressions.  Secure memory is supported by -->
+<!-- this S-expressions implementation. -->
+<!-- @node Memory Subsystem Architecture -->
+<!-- @subsection Memory Subsystem Architecture -->
+<!-- TBD. -->
+<!-- @node Miscellaneous Subsystems Architecture -->
+<!-- @subsection Miscellaneous Subsystems Architecture -->
+<!-- TBD. -->
+<!-- ********************************************************** -->
+<!-- *******************  Appendices  ************************* -->
+<!-- ********************************************************** -->
+<!-- ******************************************** -->
+   </body></html>
+

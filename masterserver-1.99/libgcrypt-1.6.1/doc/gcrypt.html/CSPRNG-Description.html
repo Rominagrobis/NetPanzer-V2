@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+<title>CSPRNG Description - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture" title="Random-Number Subsystem Architecture">
+<link rel="next" href="FIPS-PRNG-Description.html#FIPS-PRNG-Description" title="FIPS PRNG Description">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="CSPRNG-Description"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="FIPS-PRNG-Description.html#FIPS-PRNG-Description">FIPS PRNG Description</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture">Random-Number Subsystem Architecture</a>
+<hr>
+</div>
+
+<h4 class="subsection">16.6.1 Description of the CSPRNG</h4>
+
+<p>This random number generator is loosely modelled after the one
+described in Peter Gutmann's paper: "Software Generation of
+Practically Strong Random Numbers".<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>
+
+   <p>A pool of 600 bytes is used and mixed using the core RIPE-MD160 hash
+transform function.  Several extra features are used to make the
+robust against a wide variety of attacks and to protect against
+failures of subsystems.  The state of the generator may be saved to a
+file and initially seed form a file.
+
+   <p>Depending on how Libgcrypt was build the generator is able to select
+the best working entropy gathering module.  It makes use of the slow
+and fast collection methods and requires the pool to initially seeded
+form the slow gatherer or a seed file.  An entropy estimation is used
+to mix in enough data from the gather modules before returning the
+actual random output.  Process fork detection and protection is
+implemented.
+
+<!-- FIXME:  The design and implementaion needs a more verbose description. -->
+   <p>The implementation of the nonce generator (for
+<code>gcry_create_nonce</code>) is a straightforward repeated hash design: A
+28 byte buffer is initially seeded with the PID and the time in
+seconds in the first 20 bytes and with 8 bytes of random taken from
+the <code>GCRY_STRONG_RANDOM</code> generator.  Random numbers are then
+created by hashing all the 28 bytes with SHA-1 and saving that again
+in the first 20 bytes.  The hash is also returned as result.
+
+   <div class="footnote">
+<hr>
+<h4>Notes de bas de page</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> Also described in chapter
+6 of his book "Cryptographic Security Architecture", New York, 2004,
+ISBN 0-387-95387-6.</p>
+
+   <hr></div>
+
+   </body></html>
+

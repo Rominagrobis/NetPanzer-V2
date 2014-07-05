@@ -23,10 +23,10 @@ libgcrypt_la-fips.lo: fips.c /usr/include/stdc-predef.h ../config.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/string.h \
  /usr/include/bits/string.h /usr/include/bits/string2.h \
- /usr/include/dlfcn.h /usr/include/bits/dlfcn.h /usr/include/syslog.h \
- /usr/include/sys/syslog.h /usr/include/bits/syslog-path.h g10lib.h \
- visibility.h gcrypt-int.h gcrypt.h /usr/include/gpg-error.h \
- /usr/include/sys/socket.h /usr/include/sys/uio.h /usr/include/bits/uio.h \
+ /usr/include/syslog.h /usr/include/sys/syslog.h \
+ /usr/include/bits/syslog-path.h g10lib.h visibility.h gcrypt-int.h \
+ gcrypt.h /usr/include/gpg-error.h /usr/include/sys/socket.h \
+ /usr/include/sys/uio.h /usr/include/bits/uio.h \
  /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
  /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
  /usr/include/asm-generic/socket.h /usr/include/asm/sockios.h \
@@ -136,10 +136,6 @@ libgcrypt_la-fips.lo: fips.c /usr/include/stdc-predef.h ../config.h \
 /usr/include/bits/string.h:
 
 /usr/include/bits/string2.h:
-
-/usr/include/dlfcn.h:
-
-/usr/include/bits/dlfcn.h:
 
 /usr/include/syslog.h:
 

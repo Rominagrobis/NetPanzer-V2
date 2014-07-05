@@ -1,0 +1,328 @@
+<html lang="en">
+<head>
+<title>Self-Tests - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Architecture.html#Architecture" title="Architecture">
+<link rel="next" href="FIPS-Mode.html#FIPS-Mode" title="FIPS Mode">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Self-Tests"></a>
+<a name="Self_002dTests"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="FIPS-Mode.html#FIPS-Mode">FIPS Mode</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Architecture.html#Architecture">Architecture</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="appendix">Annexe A Description of the Self-Tests</h2>
+
+<p>In addition to the build time regression test suite, Libgcrypt
+implements self-tests to be performed at runtime.  Which self-tests
+are actually used depends on the mode Libgcrypt is used in.  In
+standard mode a limited set of self-tests is run at the time an
+algorithm is first used.  Note that not all algorithms feature a
+self-test in standard mode.  The <code>GCRYCTL_SELFTEST</code> control
+command may be used to run all implemented self-tests at any time;
+this will even run more tests than those run in FIPS mode.
+
+   <p>If any of the self-tests fails, the library immediately returns an
+error code to the caller.  If Libgcrypt is in FIPS mode the self-tests
+will be performed within the &ldquo;Self-Test&rdquo; state and any failure puts
+the library into the &ldquo;Error&rdquo; state.
+
+<!--  -->
+<h3 class="section">A.1 Power-Up Tests</h3>
+
+<p>Power-up tests are only performed if Libgcrypt is in FIPS mode.
+
+<h4 class="subsection">A.1.1 Symmetric Cipher Algorithm Power-Up Tests</h4>
+
+<p>The following symmetric encryption algorithm tests are run during
+power-up:
+
+     <dl>
+<dt>3DES<dd>To test the 3DES 3-key EDE encryption in ECB mode these tests are
+run:
+          <ol type=1 start=1>
+<li>A known answer test is run on a 64 bit test vector processed by 64
+rounds of Single-DES block encryption and decryption using a key
+changed with each round. 
+<li>A known answer test is run on a 64 bit test vector processed by 16
+rounds of 2-key and 3-key Triple-DES block encryption and decryptions
+using a key changed with each round. 
+<li>10 known answer tests using 3-key Triple-DES EDE encryption, comparing
+the ciphertext to the known value, then running a decryption and
+comparing it to the initial plaintext.
+          </ol>
+(<code>cipher/des.c:selftest</code>)
+
+     <br><dt>AES-128<dd>A known answer tests is run using one test vector and one test
+key with AES in ECB mode. (<code>cipher/rijndael.c:selftest_basic_128</code>)
+
+     <br><dt>AES-192<dd>A known answer tests is run using one test vector and one test
+key with AES in ECB mode. (<code>cipher/rijndael.c:selftest_basic_192</code>)
+
+     <br><dt>AES-256<dd>A known answer tests is run using one test vector and one test key
+with AES in ECB mode. (<code>cipher/rijndael.c:selftest_basic_256</code>)
+</dl>
+
+<h4 class="subsection">A.1.2 Hash Algorithm Power-Up Tests</h4>
+
+<p>The following hash algorithm tests are run during power-up:
+
+     <dl>
+<dt>SHA-1<dd>A known answer test using the string <code>"abc"</code> is run. 
+(<code>cipher/sha1.c:selftests_sha1</code>)
+<br><dt>SHA-224<dd>A known answer test using the string <code>"abc"</code> is run. 
+(<code>cipher/sha256.c:selftests_sha224</code>)
+<br><dt>SHA-256<dd>A known answer test using the string <code>"abc"</code> is run. 
+(<code>cipher/sha256.c:selftests_sha256</code>)
+<br><dt>SHA-384<dd>A known answer test using the string <code>"abc"</code> is run. 
+(<code>cipher/sha512.c:selftests_sha384</code>)
+<br><dt>SHA-512<dd>A known answer test using the string <code>"abc"</code> is run. 
+(<code>cipher/sha512.c:selftests_sha512</code>)
+</dl>
+
+<h4 class="subsection">A.1.3 MAC Algorithm Power-Up Tests</h4>
+
+<p>The following MAC algorithm tests are run during power-up:
+
+     <dl>
+<dt>HMAC SHA-1<dd>A known answer test using 9 byte of data and a 64 byte key is run. 
+(<code>cipher/hmac-tests.c:selftests_sha1</code>)
+<br><dt>HMAC SHA-224<dd>A known answer test using 28 byte of data and a 4 byte key is run. 
+(<code>cipher/hmac-tests.c:selftests_sha224</code>)
+<br><dt>HMAC SHA-256<dd>A known answer test using 28 byte of data and a 4 byte key is run. 
+(<code>cipher/hmac-tests.c:selftests_sha256</code>)
+<br><dt>HMAC SHA-384<dd>A known answer test using 28 byte of data and a 4 byte key is run. 
+(<code>cipher/hmac-tests.c:selftests_sha384</code>)
+<br><dt>HMAC SHA-512<dd>A known answer test using 28 byte of data and a 4 byte key is run. 
+(<code>cipher/hmac-tests.c:selftests_sha512</code>)
+</dl>
+
+<h4 class="subsection">A.1.4 Random Number Power-Up Test</h4>
+
+<p>The DRNG is tested during power-up this way:
+
+     <ol type=1 start=1>
+<li>Requesting one block of random using the public interface to check
+general working and the duplicated block detection. 
+<li>3 know answer tests using pre-defined keys, seed and initial DT
+values.  For each test 3 blocks of 16 bytes are requested and compared
+to the expected result.  The DT value is incremented for each block.
+        </ol>
+
+<h4 class="subsection">A.1.5 Public Key Algorithm Power-Up Tests</h4>
+
+<p>The public key algorithms are tested during power-up:
+
+     <dl>
+<dt>RSA<dd>A pre-defined 1024 bit RSA key is used and these tests are run
+in turn:
+          <ol type=1 start=1>
+<li>Conversion of S-expression to internal format. 
+(<code>cipher/rsa.c:selftests_rsa</code>)
+<li>Private key consistency check. 
+(<code>cipher/rsa.c:selftests_rsa</code>)
+<li>A pre-defined 20 byte value is signed with PKCS#1 padding for SHA-1. 
+The result is verified using the public key against the original data
+and against modified data.  (<code>cipher/rsa.c:selftest_sign_1024</code>)
+<li>A 1000 bit random value is encrypted and checked that it does not
+match the original random value.  The encrypted result is then
+decrypted and checked that it matches the original random value. 
+(<code>cipher/rsa.c:selftest_encr_1024</code>)
+          </ol>
+
+     <br><dt>DSA<dd>A pre-defined 1024 bit DSA key is used and these tests are run in turn:
+          <ol type=1 start=1>
+<li>Conversion of S-expression to internal format. 
+(<code>cipher/dsa.c:selftests_dsa</code>)
+<li>Private key consistency check. 
+(<code>cipher/dsa.c:selftests_dsa</code>)
+<li>A pre-defined 20 byte value is signed with PKCS#1 padding for
+SHA-1.  The result is verified using the public key against the
+original data and against modified data. 
+(<code>cipher/dsa.c:selftest_sign_1024</code>)
+          </ol>
+</dl>
+
+<h4 class="subsection">A.1.6 Integrity Power-Up Tests</h4>
+
+<p>The integrity of the Libgcrypt is tested during power-up but only if
+checking has been enabled at build time.  The check works by computing
+a HMAC SHA-256 checksum over the file used to load Libgcrypt into
+memory.  That checksum is compared against a checksum stored in a file
+of the same name but with a single dot as a prefix and a suffix of
+<samp><span class="file">.hmac</span></samp>.
+
+<h4 class="subsection">A.1.7 Critical Functions Power-Up Tests</h4>
+
+<p>The 3DES weak key detection is tested during power-up by calling the
+detection function with keys taken from a table listening all weak
+keys.  The table itself is protected using a SHA-1 hash. 
+(<code>cipher/des.c:selftest</code>)
+
+<!--  -->
+<h3 class="section">A.2 Conditional Tests</h3>
+
+<p>The conditional tests are performed if a certain condition is met. 
+This may occur at any time; the library does not necessary enter the
+&ldquo;Self-Test&rdquo; state to run these tests but will transit to the
+&ldquo;Error&rdquo; state if a test failed.
+
+<h4 class="subsection">A.2.1 Key-Pair Generation Tests</h4>
+
+<p>After an asymmetric key-pair has been generated, Libgcrypt runs a
+pair-wise consistency tests on the generated key.  On failure the
+generated key is not used, an error code is returned and, if in FIPS
+mode, the library is put into the &ldquo;Error&rdquo; state.
+
+     <dl>
+<dt>RSA<dd>The test uses a random number 64 bits less the size of the modulus as
+plaintext and runs an encryption and decryption operation in turn.  The
+encrypted value is checked to not match the plaintext and the result
+of the decryption is checked to match the plaintext.
+
+     <p>A new random number of the same size is generated, signed and verified
+to test the correctness of the signing operation.  As a second signing
+test, the signature is modified by incrementing its value and then
+verified with the expected result that the verification fails. 
+(<code>cipher/rsa.c:test_keys</code>)
+<br><dt>DSA<dd>The test uses a random number of the size of the Q parameter to create
+a signature and then checks that the signature verifies.  As a second
+signing test, the data is modified by incrementing its value and then
+verified against the signature with the expected result that the
+verification fails.  (<code>cipher/dsa.c:test_keys</code>)
+</dl>
+
+<h4 class="subsection">A.2.2 Software Load Tests</h4>
+
+<p>No code is loaded at runtime.
+
+<h4 class="subsection">A.2.3 Manual Key Entry Tests</h4>
+
+<p>A manual key entry feature is not implemented in Libgcrypt.
+
+<h4 class="subsection">A.2.4 Continuous RNG Tests</h4>
+
+<p>The continuous random number test is only used in FIPS mode.  The RNG
+generates blocks of 128 bit size; the first block generated per
+context is saved in the context and another block is generated to be
+returned to the caller.  Each block is compared against the saved
+block and then stored in the context.  If a duplicated block is
+detected an error is signaled and the library is put into the
+&ldquo;Fatal-Error&rdquo; state. 
+(<code>random/random-fips.c:x931_aes_driver</code>)
+
+<!--  -->
+<h3 class="section">A.3 Application Requested Tests</h3>
+
+<p>The application may requests tests at any time by means of the
+<code>GCRYCTL_SELFTEST</code> control command.  Note that using these tests
+is not FIPS conform: Although Libgcrypt rejects all application
+requests for services while running self-tests, it does not ensure
+that no other operations of Libgcrypt are still being executed.  Thus,
+in FIPS mode an application requesting self-tests needs to power-cycle
+Libgcrypt instead.
+
+   <p>When self-tests are requested, Libgcrypt runs all the tests it does
+during power-up as well as a few extra checks as described below.
+
+<h4 class="subsection">A.3.1 Symmetric Cipher Algorithm Tests</h4>
+
+<p>The following symmetric encryption algorithm tests are run in addition
+to the power-up tests:
+
+     <dl>
+<dt>AES-128<dd>A known answer tests with test vectors taken from NIST SP800-38a and
+using the high level functions is run for block modes CFB and OFB.
+
+   </dl>
+
+<h4 class="subsection">A.3.2 Hash Algorithm Tests</h4>
+
+<p>The following hash algorithm tests are run in addition to the
+power-up tests:
+
+     <dl>
+<dt>SHA-1<dt>SHA-224<dt>SHA-256<dd>
+          <ol type=1 start=1>
+<li>A known answer test using a 56 byte string is run. 
+<li>A known answer test using a string of one million letters "a" is run.
+          </ol>
+(<code>cipher/sha1.c:selftests_sha1</code>,
+<code>cipher/sha256.c:selftests_sha224</code>,
+<code>cipher/sha256.c:selftests_sha256</code>)
+<br><dt>SHA-384<br><dt>SHA-512<dd>
+          <ol type=1 start=1>
+<li>A known answer test using a 112 byte string is run. 
+<li>A known answer test using a string of one million letters "a" is run.
+          </ol>
+(<code>cipher/sha512.c:selftests_sha384</code>,
+<code>cipher/sha512.c:selftests_sha512</code>)
+</dl>
+
+<h4 class="subsection">A.3.3 MAC Algorithm Tests</h4>
+
+<p>The following MAC algorithm tests are run in addition to the power-up
+tests:
+
+     <dl>
+<dt>HMAC SHA-1<dd>
+          <ol type=1 start=1>
+<li>A known answer test using 9 byte of data and a 20 byte key is run. 
+<li>A known answer test using 9 byte of data and a 100 byte key is run. 
+<li>A known answer test using 9 byte of data and a 49 byte key is run.
+          </ol>
+(<code>cipher/hmac-tests.c:selftests_sha1</code>)
+<br><dt>HMAC SHA-224<dt>HMAC SHA-256<dt>HMAC SHA-384<dt>HMAC SHA-512<dd>
+          <ol type=1 start=1>
+<li>A known answer test using 9 byte of data and a 20 byte key is run. 
+<li>A known answer test using 50 byte of data and a 20 byte key is run. 
+<li>A known answer test using 50 byte of data and a 26 byte key is run. 
+<li>A known answer test using 54 byte of data and a 131 byte key is run. 
+<li>A known answer test using 152 byte of data and a 131 byte key is run.
+          </ol>
+(<code>cipher/hmac-tests.c:selftests_sha224</code>,
+<code>cipher/hmac-tests.c:selftests_sha256</code>,
+<code>cipher/hmac-tests.c:selftests_sha384</code>,
+<code>cipher/hmac-tests.c:selftests_sha512</code>)
+</dl>
+
+<!-- ******************************************** -->
+   </body></html>
+

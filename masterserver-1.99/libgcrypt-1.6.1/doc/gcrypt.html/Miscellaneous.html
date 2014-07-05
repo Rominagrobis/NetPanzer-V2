@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+<title>Miscellaneous - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="MPI-library.html#MPI-library" title="MPI library">
+<link rel="prev" href="EC-functions.html#EC-functions" title="EC functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Miscellaneous"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="EC-functions.html#EC-functions">EC functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="MPI-library.html#MPI-library">MPI library</a>
+<hr>
+</div>
+
+<h3 class="section">12.8 Miscellaneous</h3>
+
+<p>An MPI data type is allowed to be &ldquo;misused&rdquo; to store an arbitrary
+value.  Two functions implement this kludge:
+
+<div class="defun">
+&mdash; Function: gcry_mpi_t <b>gcry_mpi_set_opaque</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, void&nbsp;*p<!-- /@w -->, unsigned&nbsp;int&nbsp;nbits<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fset_005fopaque-259"></a></var><br>
+<blockquote>
+        <p>Store <var>nbits</var> of the value <var>p</var> points to in <var>a</var> and mark
+<var>a</var> as an opaque value (i.e. an value that can't be used for any
+math calculation and is only used to store an arbitrary bit pattern in
+<var>a</var>).  Ownership of <var>p</var> is taken by this function and thus the
+user may not use dereference the passed value anymore.  It is required
+that them memory referenced by <var>p</var> has been allocated in a way
+that <code>gcry_free</code> is able to release it.
+
+        <p>WARNING: Never use an opaque MPI for actual math operations.  The only
+valid functions are gcry_mpi_get_opaque and gcry_mpi_release.  Use
+gcry_mpi_scan to convert a string of arbitrary bytes into an MPI. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_t <b>gcry_mpi_set_opaque_copy</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, const&nbsp;void&nbsp;*p<!-- /@w -->, unsigned&nbsp;int&nbsp;nbits<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fset_005fopaque_005fcopy-260"></a></var><br>
+<blockquote>
+        <p>Same as <code>gcry_mpi_set_opaque</code> but ownership of <var>p</var> is not
+taken instead a copy of <var>p</var> is used. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void * <b>gcry_mpi_get_opaque</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, unsigned&nbsp;int&nbsp;*nbits<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fget_005fopaque-261"></a></var><br>
+<blockquote>
+        <p>Return a pointer to an opaque value stored in <var>a</var> and return its
+size in <var>nbits</var>.  Note that the returned pointer is still owned by
+<var>a</var> and that the function should never be used for an non-opaque
+MPI. 
+</p></blockquote></div>
+
+   <p>Each MPI has an associated set of flags for special purposes.  The
+currently defined flags are:
+
+     <dl>
+<dt><code>GCRYMPI_FLAG_SECURE</code><dd>Setting this flag converts <var>a</var> into an MPI stored in "secure
+memory".  Clearing this flag is not allowed. 
+<br><dt><code>GCRYMPI_FLAG_OPAQUE</code><dd>This is an interanl flag, indicating the an opaque valuue and not an
+integer is stored.  This is an read-only flag; it may not be set or
+cleared. 
+<br><dt><code>GCRYMPI_FLAG_IMMUTABLE</code><dd>If this flag is set, the MPI is marked as immutable.  Setting or
+changing the value of that MPI is ignored and an error message is
+logged.  The flag is sometimes useful for debugging. 
+<br><dt><code>GCRYMPI_FLAG_CONST</code><dd>If this flag is set, the MPI is marked as a constant and as immutable
+Setting or changing the value of that MPI is ignored and an error
+message is logged.  Such an MPI will never be deallocated and may thus
+be used without copying.  Note that using gcry_mpi_copy will return a
+copy of that constant with this and the immutable flag cleared.  A few
+commonly used constants are pre-defined and accessible using the
+macros <code>GCRYMPI_CONST_ONE</code>, <code>GCRYMPI_CONST_TWO</code>,
+<code>GCRYMPI_CONST_THREE</code>, <code>GCRYMPI_CONST_FOUR</code>, and
+<code>GCRYMPI_CONST_EIGHT</code>. 
+<br><dt><code>GCRYMPI_FLAG_USER1</code><dt><code>GCRYMPI_FLAG_USER2</code><dt><code>GCRYMPI_FLAG_USER3</code><dt><code>GCRYMPI_FLAG_USER4</code><dd>These flags are reserved for use by the application. 
+</dl>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_set_flag</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, enum&nbsp;gcry_mpi_flag&nbsp;flag<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fset_005fflag-262"></a></var><br>
+<blockquote>
+        <p>Set the <var>flag</var> for the MPI <var>a</var>.  The only allowed flags are
+<code>GCRYMPI_FLAG_SECURE</code>, <code>GCRYMPI_FLAG_IMMUTABLE</code>, and
+<code>GCRYMPI_FLAG_CONST</code>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_clear_flag</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, enum&nbsp;gcry_mpi_flag&nbsp;flag<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fclear_005fflag-263"></a></var><br>
+<blockquote>
+        <p>Clear <var>flag</var> for the multi-precision-integers <var>a</var>.  The only
+allowed flag is <code>GCRYMPI_FLAG_IMMUTABLE</code> but only if
+<code>GCRYMPI_FLAG_CONST</code> is not set.  If <code>GCRYMPI_FLAG_CONST</code> is
+set, clearing <code>GCRYMPI_FLAG_IMMUTABLE</code> will simply be ignored. 
+</p></blockquote></div>
+   o
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_get_flag</b> (<var>gcry_mpi_t&nbsp;a<!-- /@w -->, enum&nbsp;gcry_mpi_flag&nbsp;flag<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fget_005fflag-264"></a></var><br>
+<blockquote>
+        <p>Return true if <var>flag</var> is set for <var>a</var>. 
+</p></blockquote></div>
+
+   <p>To put a random value into an MPI, the following convenience function
+may be used:
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_randomize</b> (<var>gcry_mpi_t&nbsp;w<!-- /@w -->, unsigned&nbsp;int&nbsp;nbits<!-- /@w -->, enum&nbsp;gcry_random_level&nbsp;level<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005frandomize-265"></a></var><br>
+<blockquote>
+        <p>Set the multi-precision-integers <var>w</var> to a random non-negative number of
+<var>nbits</var>, using random data quality of level <var>level</var>.  In case
+<var>nbits</var> is not a multiple of a byte, <var>nbits</var> is rounded up to
+the next byte boundary.  When using a <var>level</var> of
+<code>GCRY_WEAK_RANDOM</code> this function makes use of
+<code>gcry_create_nonce</code>. 
+</p></blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- ******************** Prime numbers *********************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

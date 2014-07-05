@@ -1,0 +1,331 @@
+<html lang="en">
+<head>
+<title>Cryptographic Functions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Public-Key-cryptography.html#Public-Key-cryptography" title="Public Key cryptography">
+<link rel="prev" href="Used-S_002dexpressions.html#Used-S_002dexpressions" title="Used S-expressions">
+<link rel="next" href="General-public_002dkey-related-Functions.html#General-public_002dkey-related-Functions" title="General public-key related Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Cryptographic-Functions"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="General-public_002dkey-related-Functions.html#General-public_002dkey-related-Functions">General public-key related Functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Used-S_002dexpressions.html#Used-S_002dexpressions">Used S-expressions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Public-Key-cryptography.html#Public-Key-cryptography">Public Key cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">6.3 Cryptographic Functions</h3>
+
+<p class="noindent">Some functions operating on S-expressions support `flags' to influence
+the operation.  These flags have to be listed in a sub-S-expression
+named `flags'.  Flag names are case-sensitive.  The following flags
+are known:
+
+     <dl>
+<dt><code>comp</code><dt><code>nocomp</code><dd><a name="index-comp-97"></a><a name="index-nocomp-98"></a>If supported by the algorithm and curve the <code>comp</code> flag requests
+that points are returned in compact (compressed) representation.  The
+<code>nocomp</code> flag requests that points are returned with full
+coordinates.  The default depends on the the algorithm and curve. 
+The compact representation requires a small overhead before a point
+can be used but halves the size of a to be conveyed public key.
+
+     <br><dt><code>pkcs1</code><dd><a name="index-PKCS1-99"></a>Use PKCS#1 block type 2 padding for encryption, block type 1 padding
+for signing.
+
+     <br><dt><code>oaep</code><dd><a name="index-OAEP-100"></a>Use RSA-OAEP padding for encryption.
+
+     <br><dt><code>pss</code><dd><a name="index-PSS-101"></a>Use RSA-PSS padding for signing.
+
+     <br><dt><code>eddsa</code><dd><a name="index-EdDSA-102"></a>Use the EdDSA scheme signing instead of the default ECDSA algorithm. 
+Note that the EdDSA uses a special form of the public key.
+
+     <br><dt><code>rfc6979</code><dd><a name="index-RFC6979-103"></a>For DSA and ECDSA use a deterministic scheme for the k parameter.
+
+     <br><dt><code>no-blinding</code><dd><a name="index-no_002dblinding-104"></a>Do not use a technique called `blinding', which is used by default in
+order to prevent leaking of secret information.  Blinding is only
+implemented by RSA, but it might be implemented by other algorithms in
+the future as well, when necessary.
+
+     <br><dt><code>param</code><dd><a name="index-param-105"></a>For ECC key generation also return the domain parameters.  For ECC
+signing and verification override default parameters by provided
+domain parameters of the public or private key.
+
+     <br><dt><code>transient-key</code><dd><a name="index-transient_002dkey-106"></a>This flag is only meaningful for RSA, DSA, and ECC key generation.  If
+given the key is created using a faster and a somewhat less secure
+random number generator.  This flag may be used for keys which are
+only used for a short time or per-message and do not require full
+cryptographic strength.
+
+     <br><dt><code>use-x931</code><dd><a name="index-X9_002e31-107"></a>Force the use of the ANSI X9.31 key generation algorithm instead of
+the default algorithm. This flag is only meaningful for RSA key
+generation and usually not required.  Note that this algorithm is
+implicitly used if either <code>derive-parms</code> is given or Libgcrypt is
+in FIPS mode.
+
+     <br><dt><code>use-fips186</code><dd><a name="index-FIPS-186-108"></a>Force the use of the FIPS 186 key generation algorithm instead of the
+default algorithm.  This flag is only meaningful for DSA and usually
+not required.  Note that this algorithm is implicitly used if either
+<code>derive-parms</code> is given or Libgcrypt is in FIPS mode.  As of now
+FIPS 186-2 is implemented; after the approval of FIPS 186-3 the code
+will be changed to implement 186-3.
+
+     <br><dt><code>use-fips186-2</code><dd><a name="index-FIPS-186_002d2-109"></a>Force the use of the FIPS 186-2 key generation algorithm instead of
+the default algorithm.  This algorithm is slightly different from
+FIPS 186-3 and allows only 1024 bit keys.  This flag is only meaningful
+for DSA and only required for FIPS testing backward compatibility.
+
+   </dl>
+
+<p class="noindent">Now that we know the key basics, we can carry on and explain how to
+encrypt and decrypt data.  In almost all cases the data is a random
+session key which is in turn used for the actual encryption of the real
+data.  There are 2 functions to do this:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_encrypt</b> (<var>gcry_sexp_t&nbsp;*r_ciph,<!-- /@w --> gcry_sexp_t&nbsp;data,<!-- /@w --> gcry_sexp_t&nbsp;pkey<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fencrypt-110"></a></var><br>
+<blockquote>
+        <p>Obviously a public key must be provided for encryption.  It is
+expected as an appropriate S-expression (see above) in <var>pkey</var>. 
+The data to be encrypted can either be in the simple old format, which
+is a very simple S-expression consisting only of one MPI, or it may be
+a more complex S-expression which also allows to specify flags for
+operation, like e.g. padding rules.
+
+     <p class="noindent">If you don't want to let Libgcrypt handle the padding, you must pass an
+appropriate MPI using this expression for <var>data</var>:
+
+     <pre class="example">          (data
+            (flags raw)
+            (value <var>mpi</var>))
+</pre>
+        <p class="noindent">This has the same semantics as the old style MPI only way.  <var>MPI</var>
+is the actual data, already padded appropriate for your protocol. 
+Most RSA based systems however use PKCS#1 padding and so you can use
+this S-expression for <var>data</var>:
+
+     <pre class="example">          (data
+            (flags pkcs1)
+            (value <var>block</var>))
+</pre>
+        <p class="noindent">Here, the "flags" list has the "pkcs1" flag which let the function know
+that it should provide PKCS#1 block type 2 padding.  The actual data to
+be encrypted is passed as a string of octets in <var>block</var>.  The
+function checks that this data actually can be used with the given key,
+does the padding and encrypts it.
+
+        <p>If the function could successfully perform the encryption, the return
+value will be 0 and a new S-expression with the encrypted result is
+allocated and assigned to the variable at the address of <var>r_ciph</var>. 
+The caller is responsible to release this value using
+<code>gcry_sexp_release</code>.  In case of an error, an error code is
+returned and <var>r_ciph</var> will be set to <code>NULL</code>.
+
+     <p class="noindent">The returned S-expression has this format when used with RSA:
+
+     <pre class="example">          (enc-val
+            (rsa
+              (a <var>a-mpi</var>)))
+</pre>
+        <p class="noindent">Where <var>a-mpi</var> is an MPI with the result of the RSA operation.  When
+using the Elgamal algorithm, the return value will have this format:
+
+     <pre class="example">          (enc-val
+            (elg
+              (a <var>a-mpi</var>)
+              (b <var>b-mpi</var>)))
+</pre>
+        <p class="noindent">Where <var>a-mpi</var> and <var>b-mpi</var> are MPIs with the result of the
+Elgamal encryption operation. 
+</p></blockquote></div>
+   <!-- end gcry_pk_encrypt -->
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_decrypt</b> (<var>gcry_sexp_t&nbsp;*r_plain,<!-- /@w --> gcry_sexp_t&nbsp;data,<!-- /@w --> gcry_sexp_t&nbsp;skey<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fdecrypt-111"></a></var><br>
+<blockquote>
+        <p>Obviously a private key must be provided for decryption.  It is expected
+as an appropriate S-expression (see above) in <var>skey</var>.  The data to
+be decrypted must match the format of the result as returned by
+<code>gcry_pk_encrypt</code>, but should be enlarged with a <code>flags</code>
+element:
+
+     <pre class="example">          (enc-val
+            (flags)
+            (elg
+              (a <var>a-mpi</var>)
+              (b <var>b-mpi</var>)))
+</pre>
+        <p class="noindent">This function does not remove padding from the data by default.  To
+let Libgcrypt remove padding, give a hint in `flags' telling which
+padding method was used when encrypting:
+
+     <pre class="example">          (flags <var>padding-method</var>)
+</pre>
+        <p class="noindent">Currently <var>padding-method</var> is either <code>pkcs1</code> for PKCS#1 block
+type 2 padding, or <code>oaep</code> for RSA-OAEP padding.
+
+     <p class="noindent">The function returns 0 on success or an error code.  The variable at the
+address of <var>r_plain</var> will be set to NULL on error or receive the
+decrypted value on success.  The format of <var>r_plain</var> is a
+simple S-expression part (i.e. not a valid one) with just one MPI if
+there was no <code>flags</code> element in <var>data</var>; if at least an empty
+<code>flags</code> is passed in <var>data</var>, the format is:
+
+     <pre class="example">          (value <var>plaintext</var>)
+</pre>
+        </blockquote></div>
+   <!-- end gcry_pk_decrypt -->
+
+   <p>Another operation commonly performed using public key cryptography is
+signing data.  In some sense this is even more important than
+encryption because digital signatures are an important instrument for
+key management.  Libgcrypt supports digital signatures using
+2 functions, similar to the encryption functions:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_sign</b> (<var>gcry_sexp_t&nbsp;*r_sig,<!-- /@w --> gcry_sexp_t&nbsp;data,<!-- /@w --> gcry_sexp_t&nbsp;skey<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fsign-112"></a></var><br>
+<blockquote>
+        <p>This function creates a digital signature for <var>data</var> using the
+private key <var>skey</var> and place it into the variable at the address of
+<var>r_sig</var>.  <var>data</var> may either be the simple old style S-expression
+with just one MPI or a modern and more versatile S-expression which
+allows to let Libgcrypt handle padding:
+
+     <pre class="example">           (data
+            (flags pkcs1)
+            (hash <var>hash-algo</var> <var>block</var>))
+</pre>
+        <p class="noindent">This example requests to sign the data in <var>block</var> after applying
+PKCS#1 block type 1 style padding.  <var>hash-algo</var> is a string with the
+hash algorithm to be encoded into the signature, this may be any hash
+algorithm name as supported by Libgcrypt.  Most likely, this will be
+"sha256" or "sha1".  It is obvious that the length of <var>block</var> must
+match the size of that message digests; the function checks that this
+and other constraints are valid.
+
+     <p class="noindent">If PKCS#1 padding is not required (because the caller does already
+provide a padded value), either the old format or better the following
+format should be used:
+
+     <pre class="example">          (data
+            (flags raw)
+            (value <var>mpi</var>))
+</pre>
+        <p class="noindent">Here, the data to be signed is directly given as an <var>MPI</var>.
+
+     <p class="noindent">For DSA the input data is expected in this format:
+
+     <pre class="example">          (data
+            (flags raw)
+            (value <var>mpi</var>))
+</pre>
+        <p class="noindent">Here, the data to be signed is directly given as an <var>MPI</var>.  It is
+expect that this MPI is the the hash value.  For the standard DSA
+using a MPI is not a problem in regard to leading zeroes because the
+hash value is directly used as an MPI.  For better standard
+conformance it would be better to explicit use a memory string (like
+with pkcs1) but that is currently not supported.  However, for
+deterministic DSA as specified in RFC6979 this can't be used.  Instead
+the following input is expected.
+
+     <pre class="example">          (data
+            (flags rfc6979)
+            (hash <var>hash-algo</var> <var>block</var>))
+</pre>
+        <p>Note that the provided hash-algo is used for the internal HMAC; it
+should match the hash-algo used to create <var>block</var>.
+
+     <p class="noindent">The signature is returned as a newly allocated S-expression in
+<var>r_sig</var> using this format for RSA:
+
+     <pre class="example">          (sig-val
+            (rsa
+              (s <var>s-mpi</var>)))
+</pre>
+        <p>Where <var>s-mpi</var> is the result of the RSA sign operation.  For DSA the
+S-expression returned is:
+
+     <pre class="example">          (sig-val
+            (dsa
+              (r <var>r-mpi</var>)
+              (s <var>s-mpi</var>)))
+</pre>
+        <p>Where <var>r-mpi</var> and <var>s-mpi</var> are the result of the DSA sign
+operation.
+
+        <p>For Elgamal signing (which is slow, yields large numbers and probably
+is not as secure as the other algorithms), the same format is used
+with "elg" replacing "dsa"; for ECDSA signing, the same format is used
+with "ecdsa" replacing "dsa".
+
+        <p>For the EdDSA algorithm (cf. Ed25515) the required input parameters are:
+
+     <pre class="example">          (data
+            (flags eddsa)
+            (hash-algo sha512)
+            (value <var>message</var>))
+</pre>
+        <p>Note that the <var>message</var> may be of any length; hashing is part of
+the algorithm.  Using a large data block for <var>message</var> is not
+suggested; in that case the used protocol should better require that a
+hash of the message is used as input to the EdDSA algorithm.
+
+        </blockquote></div>
+   <!-- end gcry_pk_sign -->
+
+<p class="noindent">The operation most commonly used is definitely the verification of a
+signature.  Libgcrypt provides this function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_verify</b> (<var>gcry_sexp_t&nbsp;sig<!-- /@w -->, gcry_sexp_t&nbsp;data<!-- /@w -->, gcry_sexp_t&nbsp;pkey<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fverify-113"></a></var><br>
+<blockquote>
+        <p>This is used to check whether the signature <var>sig</var> matches the
+<var>data</var>.  The public key <var>pkey</var> must be provided to perform this
+verification.  This function is similar in its parameters to
+<code>gcry_pk_sign</code> with the exceptions that the public key is used
+instead of the private key and that no signature is created but a
+signature, in a format as created by <code>gcry_pk_sign</code>, is passed to
+the function in <var>sig</var>.
+
+     <p class="noindent">The result is 0 for success (i.e. the data matches the signature), or an
+error code where the most relevant code is <code>GCRY_ERR_BAD_SIGNATURE</code>
+to indicate that the signature does not match the provided data.
+
+        </blockquote></div>
+   <!-- end gcry_pk_verify -->
+
+   </body></html>
+

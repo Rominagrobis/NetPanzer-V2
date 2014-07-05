@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+<title>hmac256 - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Tools.html#Tools" title="Tools">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="hmac256"></a>
+<p>
+Up:&nbsp;<a rel="up" accesskey="u" href="Tools.html#Tools">Tools</a>
+<hr>
+</div>
+
+<h3 class="section">15.1 A HMAC-SHA-256 tool</h3>
+
+<p>This is a standalone HMAC-SHA-256 implementation used to compute an
+HMAC-SHA-256 message authentication code.  The tool has originally
+been developed as a second implementation for Libgcrypt to allow
+comparing against the primary implementation and to be used for
+internal consistency checks.  It should not be used for sensitive data
+because no mechanisms to clear the stack etc are used.
+
+   <p>The code has been written in a highly portable manner and requires
+only a few standard definitions to be provided in a config.h file.
+
+<p class="noindent"><samp><span class="command">hmac256</span></samp> is commonly invoked as
+
+<pre class="example">     hmac256 "This is my key" foo.txt
+</pre>
+   <p class="noindent">This compute the MAC on the file <samp><span class="file">foo.txt</span></samp> using the key given on
+the command line.
+
+<p class="noindent"><samp><span class="command">hmac256</span></samp> understands these options:
+
+     <dl>
+<dt><code>--binary</code><dd>Print the MAC as a binary string.  The default is to print the MAC
+encoded has lower case hex digits.
+
+     <br><dt><code>--version</code><dd>Print version of the program and exit.
+
+   </dl>
+
+<!-- ********************************************************** -->
+<!-- *****************  Architecure Overview  ***************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

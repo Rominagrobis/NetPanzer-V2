@@ -1,0 +1,237 @@
+<html lang="en">
+<head>
+<title>EC functions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="MPI-library.html#MPI-library" title="MPI library">
+<link rel="prev" href="Bit-manipulations.html#Bit-manipulations" title="Bit manipulations">
+<link rel="next" href="Miscellaneous.html#Miscellaneous" title="Miscellaneous">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="EC-functions"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Miscellaneous.html#Miscellaneous">Miscellaneous</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Bit-manipulations.html#Bit-manipulations">Bit manipulations</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="MPI-library.html#MPI-library">MPI library</a>
+<hr>
+</div>
+
+<h3 class="section">12.7 EC functions</h3>
+
+<p class="noindent">Libgcrypt provides an API to access low level functions used by its
+elliptic curve implementation.  These functions allow to implement
+elliptic curve methods for which no explicit support is available.
+
+<div class="defun">
+&mdash; Function: gcry_mpi_point_t <b>gcry_mpi_point_new</b> (<var>unsigned&nbsp;int&nbsp;nbits<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005fnew-243"></a></var><br>
+<blockquote>
+        <p>Allocate a new point object, initialize it to 0, and allocate enough
+memory for a points of at least <var>nbits</var>.  This pre-allocation
+yields only a small performance win and is not really necessary
+because Libgcrypt automatically re-allocates the required memory. 
+Using 0 for <var>nbits</var> is usually the right thing to do. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_point_release</b> (<var>gcry_mpi_point_t&nbsp;point<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005frelease-244"></a></var><br>
+<blockquote>
+        <p>Release <var>point</var> and free all associated resources.  Passing
+<code>NULL</code> is allowed and ignored. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_point_get</b> (<var>gcry_mpi_t&nbsp;x<!-- /@w -->, gcry_mpi_t&nbsp;y<!-- /@w -->, gcry_mpi_t&nbsp;z<!-- /@w -->, gcry_mpi_point_t&nbsp;point<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005fget-245"></a></var><br>
+<blockquote>
+        <p>Store the projective coordinates from <var>point</var> into the MPIs
+<var>x</var>, <var>y</var>, and <var>z</var>.  If a coordinate is not required,
+<code>NULL</code> may be used for <var>x</var>, <var>y</var>, or <var>z</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_point_snatch_get</b> (<var>gcry_mpi_t&nbsp;x<!-- /@w -->, gcry_mpi_t&nbsp;y<!-- /@w -->, gcry_mpi_t&nbsp;z<!-- /@w -->, gcry_mpi_point_t&nbsp;point<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005fsnatch_005fget-246"></a></var><br>
+<blockquote>
+        <p>Store the projective coordinates from <var>point</var> into the MPIs
+<var>x</var>, <var>y</var>, and <var>z</var>.  If a coordinate is not required,
+<code>NULL</code> may be used for <var>x</var>, <var>y</var>, or <var>z</var>.  The object
+<var>point</var> is then released.  Using this function instead of
+<code>gcry_mpi_point_get</code> and <code>gcry_mpi_point_release</code> has the
+advantage of avoiding some extra memory allocations and copies. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_point_t <b>gcry_mpi_point_set</b> (<var> gcry_mpi_point_t&nbsp;point<!-- /@w -->, gcry_mpi_t&nbsp;x<!-- /@w -->, gcry_mpi_t&nbsp;y<!-- /@w -->, gcry_mpi_t&nbsp;z<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005fset-247"></a></var><br>
+<blockquote>
+        <p>Store the projective coordinates from <var>x</var>, <var>y</var>, and <var>z</var>
+into <var>point</var>.  If a coordinate is given as <code>NULL</code>, the value
+0 is used.  If <code>NULL</code> is used for <var>point</var> a new point object
+is allocated and returned.  Returns <var>point</var> or the newly allocated
+point object. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_point_t <b>gcry_mpi_point_snatch_set</b> (<var> gcry_mpi_point_t&nbsp;point<!-- /@w -->, gcry_mpi_t&nbsp;x<!-- /@w -->, gcry_mpi_t&nbsp;y<!-- /@w -->, gcry_mpi_t&nbsp;z<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fpoint_005fsnatch_005fset-248"></a></var><br>
+<blockquote>
+        <p>Store the projective coordinates from <var>x</var>, <var>y</var>, and <var>z</var>
+into <var>point</var>.  If a coordinate is given as <code>NULL</code>, the value
+0 is used.  If <code>NULL</code> is used for <var>point</var> a new point object
+is allocated and returned.  The MPIs <var>x</var>, <var>y</var>, and <var>z</var> are
+released.  Using this function instead of <code>gcry_mpi_point_set</code>
+and 3 calls to <code>gcry_mpi_release</code> has the advantage of avoiding
+some extra memory allocations and copies.  Returns <var>point</var> or the
+newly allocated point object. 
+</p></blockquote></div>
+
+   <p><a name="gcry_005fmpi_005fec_005fnew"></a>
+
+<div class="defun">
+&mdash; Function: gpg_error_t <b>gcry_mpi_ec_p_new</b> (<var>gpg_ctx_t&nbsp;*r_ctx<!-- /@w -->, gcry_sexp_t&nbsp;keyparam<!-- /@w -->, const&nbsp;char&nbsp;*curvename<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fp_005fnew-249"></a></var><br>
+<blockquote>
+        <p>Allocate a new context for elliptic curve operations.  If
+<var>keyparam</var> is given it specifies the parameters of the curve
+(see <a href="ecc_005fkeyparam.html#ecc_005fkeyparam">ecc_keyparam</a>).  If <var>curvename</var> is given in addition to
+<var>keyparam</var> and the key parameters do not include a named curve
+reference, the string <var>curvename</var> is used to fill in missing
+parameters.  If only <var>curvename</var> is given, the context is
+initialized for this named curve.
+
+        <p>If a parameter specifying a point (e.g. <code>g</code> or <code>q</code>) is not
+found, the parser looks for a non-encoded point by appending
+<code>.x</code>, <code>.y</code>, and <code>.z</code> to the parameter name and looking
+them all up to create a point.  A parameter with the suffix <code>.z</code>
+is optional and defaults to 1.
+
+        <p>On success the function returns 0 and stores the new context object at
+<var>r_ctx</var>; this object eventually needs to be released
+(see <a href="gcry_005fctx_005frelease.html#gcry_005fctx_005frelease">gcry_ctx_release</a>).  On error the function stores <code>NULL</code> at
+<var>r_ctx</var> and returns an error code. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_t <b>gcry_mpi_ec_get_mpi</b> (<var> const&nbsp;char&nbsp;*name<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w -->, int&nbsp;copy<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fget_005fmpi-250"></a></var><br>
+<blockquote>
+        <p>Return the MPI with <var>name</var> from the context <var>ctx</var>.  If not
+found <code>NULL</code> is returned.  If the returned MPI may later be
+modified, it is suggested to pass <code>1</code> to <var>copy</var>, so that the
+function guarantees that a modifiable copy of the MPI is returned.  If
+<code>0</code> is used for <var>copy</var>, this function may return a constant
+flagged MPI.  In any case <code>gcry_mpi_release</code> needs to be called
+to release the result.  For valid names <a href="ecc_005fkeyparam.html#ecc_005fkeyparam">ecc_keyparam</a>.  If the
+public key <code>q</code> is requested but only the private key <code>d</code> is
+available, <code>q</code> will be recomputed on the fly.  If a point
+parameter is requested it is returned as an uncompressed
+encoded point unless these special names are used:
+          <dl>
+<dt><var>q@eddsa</var><dd>Return an EdDSA style compressed point.  This is only supported for
+Twisted Edwards curves. 
+</dl>
+        </p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_point_t <b>gcry_mpi_ec_get_point</b> (<var> const&nbsp;char&nbsp;*name<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w -->, int&nbsp;copy<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fget_005fpoint-251"></a></var><br>
+<blockquote>
+        <p>Return the point with <var>name</var> from the context <var>ctx</var>.  If not
+found <code>NULL</code> is returned.  If the returned MPI may later be
+modified, it is suggested to pass <code>1</code> to <var>copy</var>, so that the
+function guarantees that a modifiable copy of the MPI is returned.  If
+<code>0</code> is used for <var>copy</var>, this function may return a constant
+flagged point.  In any case <code>gcry_mpi_point_release</code> needs to be
+called to release the result.  If the public key <code>q</code> is requested
+but only the private key <code>d</code> is available, <code>q</code> will be
+recomputed on the fly. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gpg_error_t <b>gcry_mpi_ec_set_mpi</b> (<var> const&nbsp;char&nbsp;*name<!-- /@w -->, gcry_mpi_t&nbsp;newvalue<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fset_005fmpi-252"></a></var><br>
+<blockquote>
+        <p>Store the MPI <var>newvalue</var> at <var>name</var> into the context <var>ctx</var>. 
+On success <code>0</code> is returned; on error an error code.  Valid names
+are the MPI parameters of an elliptic curve (see <a href="ecc_005fkeyparam.html#ecc_005fkeyparam">ecc_keyparam</a>). 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gpg_error_t <b>gcry_mpi_ec_set_point</b> (<var> const&nbsp;char&nbsp;*name<!-- /@w -->, gcry_mpi_point_t&nbsp;newvalue<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fset_005fpoint-253"></a></var><br>
+<blockquote>
+        <p>Store the point <var>newvalue</var> at <var>name</var> into the context
+<var>ctx</var>.  On success <code>0</code> is returned; on error an error code. 
+Valid names are the point parameters of an elliptic curve
+(see <a href="ecc_005fkeyparam.html#ecc_005fkeyparam">ecc_keyparam</a>). 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_ec_get_affine</b> (<var> gcry_mpi_t&nbsp;x<!-- /@w -->, gcry_mpi_t&nbsp;y<!-- /@w -->, gcry_mpi_point_t&nbsp;point<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fget_005faffine-254"></a></var><br>
+<blockquote>
+        <p>Compute the affine coordinates from the projective coordinates in
+<var>point</var> and store them into <var>x</var> and <var>y</var>.  If one
+coordinate is not required, <code>NULL</code> may be passed to <var>x</var> or
+<var>y</var>.  <var>ctx</var> is the context object which has been created using
+<code>gcry_mpi_ec_new</code>. Returns 0 on success or not 0 if <var>point</var>
+is at infinity.
+
+        <p>Note that you can use <code>gcry_mpi_ec_set_point</code> with the value
+<code>GCRYMPI_CONST_ONE</code> for <var>z</var> to convert affine coordinates
+back into projective coordinates.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_ec_dup</b> (<var> gcry_mpi_point_t&nbsp;w<!-- /@w -->, gcry_mpi_point_t&nbsp;u<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fdup-255"></a></var><br>
+<blockquote>
+        <p>Double the point <var>u</var> of the elliptic curve described by <var>ctx</var>
+and store the result into <var>w</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_ec_add</b> (<var> gcry_mpi_point_t&nbsp;w<!-- /@w -->, gcry_mpi_point_t&nbsp;u<!-- /@w -->, gcry_mpi_point_t&nbsp;v<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fadd-256"></a></var><br>
+<blockquote>
+        <p>Add the points <var>u</var> and <var>v</var> of the elliptic curve described by
+<var>ctx</var> and store the result into <var>w</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_ec_mul</b> (<var> gcry_mpi_point_t&nbsp;w<!-- /@w -->, gcry_mpi_t&nbsp;n<!-- /@w -->, gcry_mpi_point_t&nbsp;u<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fmul-257"></a></var><br>
+<blockquote>
+        <p>Multiply the point <var>u</var> of the elliptic curve described by
+<var>ctx</var> by <var>n</var> and store the result into <var>w</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_ec_curve_point</b> (<var> gcry_mpi_point_t&nbsp;point<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fec_005fcurve_005fpoint-258"></a></var><br>
+<blockquote>
+        <p>Return true if <var>point</var> is on the elliptic curve described by
+<var>ctx</var>. 
+</p></blockquote></div>
+
+   </body></html>
+

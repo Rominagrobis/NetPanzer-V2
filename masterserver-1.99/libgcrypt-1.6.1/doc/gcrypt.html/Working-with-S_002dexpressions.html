@@ -1,0 +1,364 @@
+<html lang="en">
+<head>
+<title>Working with S-expressions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="S_002dexpressions.html#S_002dexpressions" title="S-expressions">
+<link rel="prev" href="Data-types-for-S_002dexpressions.html#Data-types-for-S_002dexpressions" title="Data types for S-expressions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Working-with-S-expressions"></a>
+<a name="Working-with-S_002dexpressions"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Data-types-for-S_002dexpressions.html#Data-types-for-S_002dexpressions">Data types for S-expressions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="S_002dexpressions.html#S_002dexpressions">S-expressions</a>
+<hr>
+</div>
+
+<h3 class="section">11.2 Working with S-expressions</h3>
+
+<p class="noindent">There are several functions to create an Libgcrypt S-expression object
+from its external representation or from a string template.  There is
+also a function to convert the internal representation back into one of
+the external formats:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_sexp_new</b> (<var>gcry_sexp_t&nbsp;*r_sexp<!-- /@w -->, const&nbsp;void&nbsp;*buffer<!-- /@w -->, size_t&nbsp;length<!-- /@w -->, int&nbsp;autodetect<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnew-183"></a></var><br>
+<blockquote>
+        <p>This is the generic function to create an new S-expression object from
+its external representation in <var>buffer</var> of <var>length</var> bytes.  On
+success the result is stored at the address given by <var>r_sexp</var>. 
+With <var>autodetect</var> set to 0, the data in <var>buffer</var> is expected to
+be in canonized format, with <var>autodetect</var> set to 1 the parses any of
+the defined external formats.  If <var>buffer</var> does not hold a valid
+S-expression an error code is returned and <var>r_sexp</var> set to
+<code>NULL</code>. 
+Note that the caller is responsible for releasing the newly allocated
+S-expression using <code>gcry_sexp_release</code>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_sexp_create</b> (<var>gcry_sexp_t&nbsp;*r_sexp<!-- /@w -->, void&nbsp;*buffer<!-- /@w -->, size_t&nbsp;length<!-- /@w -->, int&nbsp;autodetect<!-- /@w -->, void&nbsp;(*freefnc)(void*)<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fcreate-184"></a></var><br>
+<blockquote>
+        <p>This function is identical to <code>gcry_sexp_new</code> but has an extra
+argument <var>freefnc</var>, which, when not set to <code>NULL</code>, is expected
+to be a function to release the <var>buffer</var>; most likely the standard
+<code>free</code> function is used for this argument.  This has the effect of
+transferring the ownership of <var>buffer</var> to the created object in
+<var>r_sexp</var>.  The advantage of using this function is that Libgcrypt
+might decide to directly use the provided buffer and thus avoid extra
+copying. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_sexp_sscan</b> (<var>gcry_sexp_t&nbsp;*r_sexp<!-- /@w -->, size_t&nbsp;*erroff<!-- /@w -->, const&nbsp;char&nbsp;*buffer<!-- /@w -->, size_t&nbsp;length<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fsscan-185"></a></var><br>
+<blockquote>
+        <p>This is another variant of the above functions.  It behaves nearly
+identical but provides an <var>erroff</var> argument which will receive the
+offset into the buffer where the parsing stopped on error. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_sexp_build</b> (<var>gcry_sexp_t&nbsp;*r_sexp<!-- /@w -->, size_t&nbsp;*erroff<!-- /@w -->, const&nbsp;char&nbsp;*format,&nbsp;...<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fbuild-186"></a></var><br>
+<blockquote>
+        <p>This function creates an internal S-expression from the string template
+<var>format</var> and stores it at the address of <var>r_sexp</var>. If there is a
+parsing error, the function returns an appropriate error code and stores
+the offset into <var>format</var> where the parsing stopped in <var>erroff</var>. 
+The function supports a couple of printf-like formatting characters and
+expects arguments for some of these escape sequences right after
+<var>format</var>.  The following format characters are defined:
+
+          <dl>
+<dt>&lsquo;<samp><span class="samp">%m</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>gcry_mpi_t</code> and a copy of
+its value is inserted into the resulting S-expression.  The MPI is
+stored as a signed integer. 
+<br><dt>&lsquo;<samp><span class="samp">%M</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>gcry_mpi_t</code> and a copy of
+its value is inserted into the resulting S-expression.  The MPI is
+stored as an unsigned integer. 
+<br><dt>&lsquo;<samp><span class="samp">%s</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>char *</code> and that
+string is inserted into the resulting S-expression. 
+<br><dt>&lsquo;<samp><span class="samp">%d</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>int</code> and its value is
+inserted into the resulting S-expression. 
+<br><dt>&lsquo;<samp><span class="samp">%u</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>unsigned int</code> and
+its value is inserted into the resulting S-expression. 
+<br><dt>&lsquo;<samp><span class="samp">%b</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>int</code> directly
+followed by an argument of type <code>char *</code>.  This represents a
+buffer of given length to be inserted into the resulting S-expression. 
+<br><dt>&lsquo;<samp><span class="samp">%S</span></samp>&rsquo;<dd>The next argument is expected to be of type <code>gcry_sexp_t</code> and a
+copy of that S-expression is embedded in the resulting S-expression. 
+The argument needs to be a regular S-expression, starting with a
+parenthesis.
+
+        </dl>
+
+     <p class="noindent">No other format characters are defined and would return an error.  Note
+that the format character &lsquo;<samp><span class="samp">%%</span></samp>&rsquo; does not exists, because a percent
+sign is not a valid character in an S-expression. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_sexp_release</b> (<var>gcry_sexp_t&nbsp;sexp<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005frelease-187"></a></var><br>
+<blockquote>
+        <p>Release the S-expression object <var>sexp</var>.  If the S-expression is
+stored in secure memory it explicitly zeroises that memory; note that
+this is done in addition to the zeroisation always done when freeing
+secure memory. 
+</p></blockquote></div>
+
+<p class="noindent">The next 2 functions are used to convert the internal representation
+back into a regular external S-expression format and to show the
+structure for debugging.
+
+<div class="defun">
+&mdash; Function: size_t <b>gcry_sexp_sprint</b> (<var>gcry_sexp_t&nbsp;sexp<!-- /@w -->, int&nbsp;mode<!-- /@w -->, char&nbsp;*buffer<!-- /@w -->, size_t&nbsp;maxlength<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fsprint-188"></a></var><br>
+<blockquote>
+        <p>Copies the S-expression object <var>sexp</var> into <var>buffer</var> using the
+format specified in <var>mode</var>.  <var>maxlength</var> must be set to the
+allocated length of <var>buffer</var>.  The function returns the actual
+length of valid bytes put into <var>buffer</var> or 0 if the provided buffer
+is too short.  Passing <code>NULL</code> for <var>buffer</var> returns the required
+length for <var>buffer</var>.  For convenience reasons an extra byte with
+value 0 is appended to the buffer.
+
+     <p class="noindent">The following formats are supported:
+
+          <dl>
+<dt><code>GCRYSEXP_FMT_DEFAULT</code><dd>Returns a convenient external S-expression representation.
+
+          <br><dt><code>GCRYSEXP_FMT_CANON</code><dd>Return the S-expression in canonical format.
+
+          <br><dt><code>GCRYSEXP_FMT_BASE64</code><dd>Not currently supported.
+
+          <br><dt><code>GCRYSEXP_FMT_ADVANCED</code><dd>Returns the S-expression in advanced format. 
+</dl>
+        </p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_sexp_dump</b> (<var>gcry_sexp_t&nbsp;sexp<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fdump-189"></a></var><br>
+<blockquote>
+        <p>Dumps <var>sexp</var> in a format suitable for debugging to Libgcrypt's
+logging stream. 
+</p></blockquote></div>
+
+<p class="noindent">Often canonical encoding is used in the external representation.  The
+following function can be used to check for valid encoding and to learn
+the length of the S-expression"
+
+<div class="defun">
+&mdash; Function: size_t <b>gcry_sexp_canon_len</b> (<var>const&nbsp;unsigned&nbsp;char&nbsp;*buffer<!-- /@w -->, size_t&nbsp;length<!-- /@w -->, size_t&nbsp;*erroff<!-- /@w -->, int&nbsp;*errcode<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fcanon_005flen-190"></a></var><br>
+<blockquote>
+        <p>Scan the canonical encoded <var>buffer</var> with implicit length values and
+return the actual length this S-expression uses.  For a valid S-expression
+it should never return 0.  If <var>length</var> is not 0, the maximum
+length to scan is given; this can be used for syntax checks of
+data passed from outside.  <var>errcode</var> and <var>erroff</var> may both be
+passed as <code>NULL</code>.
+
+        </blockquote></div>
+
+<p class="noindent">There are functions to parse S-expressions and retrieve elements:
+
+<div class="defun">
+&mdash; Function: gcry_sexp_t <b>gcry_sexp_find_token</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w -->, const&nbsp;char&nbsp;*token<!-- /@w -->, size_t&nbsp;toklen<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005ffind_005ftoken-191"></a></var><br>
+<blockquote>
+        <p>Scan the S-expression for a sublist with a type (the car of the list)
+matching the string <var>token</var>.  If <var>toklen</var> is not 0, the token is
+assumed to be raw memory of this length.  The function returns a newly
+allocated S-expression consisting of the found sublist or <code>NULL</code>
+when not found. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_sexp_length</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005flength-192"></a></var><br>
+<blockquote>
+        <p>Return the length of the <var>list</var>.  For a valid S-expression this
+should be at least 1. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_sexp_t <b>gcry_sexp_nth</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w -->, int&nbsp;number<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnth-193"></a></var><br>
+<blockquote>
+        <p>Create and return a new S-expression from the element with index <var>number</var> in
+<var>list</var>.  Note that the first element has the index 0.  If there is
+no such element, <code>NULL</code> is returned. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_sexp_t <b>gcry_sexp_car</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fcar-194"></a></var><br>
+<blockquote>
+        <p>Create and return a new S-expression from the first element in
+<var>list</var>; this is called the "type" and should always exist per
+S-expression specification and in general be a string.  <code>NULL</code> is
+returned in case of a problem. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_sexp_t <b>gcry_sexp_cdr</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fcdr-195"></a></var><br>
+<blockquote>
+        <p>Create and return a new list form all elements except for the first one. 
+Note that this function may return an invalid S-expression because it
+is not guaranteed, that the type exists and is a string.  However, for
+parsing a complex S-expression it might be useful for intermediate
+lists.  Returns <code>NULL</code> on error. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_sexp_nth_data</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w -->, int&nbsp;number<!-- /@w -->, size_t&nbsp;*datalen<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnth_005fdata-196"></a></var><br>
+<blockquote>
+        <p>This function is used to get data from a <var>list</var>.  A pointer to the
+actual data with index <var>number</var> is returned and the length of this
+data will be stored to <var>datalen</var>.  If there is no data at the given
+index or the index represents another list, <code>NULL</code> is returned. 
+<strong>Caution:</strong> The returned pointer is valid as long as <var>list</var> is
+not modified or released.
+
+     <p class="noindent">Here is an example on how to extract and print the surname (Meier) from
+the S-expression &lsquo;<samp><span class="samp">(Name Otto Meier (address Burgplatz 3))</span></samp>&rsquo;:
+
+     <pre class="example">          size_t len;
+          const char *name;
+          
+          name = gcry_sexp_nth_data (list, 2, &amp;len);
+          printf ("my name is %.*s\n", (int)len, name);
+</pre>
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: void * <b>gcry_sexp_nth_buffer</b> (<var>const&nbsp;gcry_sexp_t&nbsp;list<!-- /@w -->, int&nbsp;number<!-- /@w -->, size_t&nbsp;*rlength<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnth_005fbuffer-197"></a></var><br>
+<blockquote>
+        <p>This function is used to get data from a <var>list</var>.  A malloced
+buffer with the actual data at list index <var>number</var> is returned and
+the length of this buffer will be stored to <var>rlength</var>.  If there
+is no data at the given index or the index represents another list,
+<code>NULL</code> is returned.  The caller must release the result using
+<code>gcry_free</code>.
+
+     <p class="noindent">Here is an example on how to extract and print the CRC value from the
+S-expression &lsquo;<samp><span class="samp">(hash crc32 #23ed00d7)</span></samp>&rsquo;:
+
+     <pre class="example">          size_t len;
+          char *value;
+          
+          value = gcry_sexp_nth_buffer (list, 2, &amp;len);
+          if (value)
+            fwrite (value, len, 1, stdout);
+          gcry_free (value);
+</pre>
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: char * <b>gcry_sexp_nth_string</b> (<var>gcry_sexp_t&nbsp;list<!-- /@w -->, int&nbsp;number<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnth_005fstring-198"></a></var><br>
+<blockquote>
+        <p>This function is used to get and convert data from a <var>list</var>. The
+data is assumed to be a Nul terminated string.  The caller must
+release this returned value using <code>gcry_free</code>.  If there is
+no data at the given index, the index represents a list or the value
+can't be converted to a string, <code>NULL</code> is returned. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_mpi_t <b>gcry_sexp_nth_mpi</b> (<var>gcry_sexp_t&nbsp;list<!-- /@w -->, int&nbsp;number<!-- /@w -->, int&nbsp;mpifmt<!-- /@w --></var>)<var><a name="index-gcry_005fsexp_005fnth_005fmpi-199"></a></var><br>
+<blockquote>
+        <p>This function is used to get and convert data from a <var>list</var>. This
+data is assumed to be an MPI stored in the format described by
+<var>mpifmt</var> and returned as a standard Libgcrypt MPI.  The caller must
+release this returned value using <code>gcry_mpi_release</code>.  If there is
+no data at the given index, the index represents a list or the value
+can't be converted to an MPI, <code>NULL</code> is returned.  If you use
+this function to parse results of a public key function, you most
+likely want to use <code>GCRYMPI_FMT_USG</code>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gpg_error_t <b>gcry_sexp_extract_param</b> (<var> gcry_sexp_t&nbsp;sexp<!-- /@w -->, const&nbsp;char&nbsp;*path<!-- /@w -->, const&nbsp;char&nbsp;*list<!-- /@w -->, ...</var>)<var><a name="index-gcry_005fsexp_005fextract_005fparam-200"></a></var><br>
+<blockquote>
+        <p>Extract parameters from an S-expression using a list of parameter
+names.  The names of these parameters are specified in LIST.  White
+space between the parameter names are ignored. Some special characters
+may be given to control the conversion:
+
+          <dl>
+<dt>&lsquo;<samp><span class="samp">+</span></samp>&rsquo;<dd>Switch to unsigned integer format (GCRYMPI_FMT_USG).  This is the
+default mode. 
+<br><dt>&lsquo;<samp><span class="samp">-</span></samp>&rsquo;<dd>Switch to standard signed format (GCRYMPI_FMT_STD). 
+<br><dt>&lsquo;<samp><span class="samp">/</span></samp>&rsquo;<dd>Switch to opaque MPI format.  The resulting MPIs may not be used for
+computations; see <code>gcry_mpi_get_opaque</code> for details. 
+<br><dt>&lsquo;<samp><span class="samp">&amp;</span></samp>&rsquo;<dd>Switch to buffer descriptor mode.  See below for details. 
+<br><dt>&lsquo;<samp><span class="samp">?</span></samp>&rsquo;<dd>If immediately following a parameter letter (no white space allowed),
+that parameter is considered optional. 
+</dl>
+
+        <p>In general parameter names are single letters.  To use a string for a
+parameter name, enclose the name in single quotes.
+
+        <p>Unless in buffer descriptor mode for each parameter name a pointer to
+an <code>gcry_mpi_t</code> variable is expected finally followed by a <code>NULL</code>. 
+For example
+     <pre class="example">            _gcry_sexp_extract_param (key, NULL, "n/x+e d-'foo'",
+                                      &amp;mpi_n, &amp;mpi_x, &amp;mpi_e, &amp;mpi_foo, NULL)
+</pre>
+        <p>stores the parameter 'n' from <var>key</var> as an unsigned MPI into
+<var>mpi_n</var>, the parameter 'x' as an opaque MPI into <var>mpi_x</var>, the
+parameter 'e' again as an unsigned MPI into <var>mpi_e</var>, and the
+parameter 'foo' as a signed MPI.
+
+        <p><var>path</var> is an optional string used to locate a token.  The
+exclamation mark separated tokens are used via
+<code>gcry_sexp_find_token</code> to find a start point inside the
+S-expression.
+
+        <p>In buffer descriptor mode a pointer to a <code>gcry_buffer_t</code>
+descriptor is expected instead of a pointer to an MPI.  The caller may
+use two different operation modes here: If the <var>data</var> field of the
+provided descriptor is <code>NULL</code>, the function allocates a new
+buffer and stores it at <var>data</var>; the other fields are set
+accordingly with <var>off</var> set to 0.  If <var>data</var> is not
+<code>NULL</code>, the function assumes that the <var>data</var>, <var>size</var>, and
+<var>off</var> fields specify a buffer where to but the value of the
+respective parameter; on return the <var>len</var> field receives the
+number of bytes copied to that buffer; in case the buffer is too
+small, the function immediately returns with an error code (and
+<var>len</var> is set to 0).
+
+        <p>The function returns NULL on success.  On error an error code is
+returned and the passed MPIs are either unchanged or set to NULL. 
+</p></blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- *******************  MPIs ******** *********************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

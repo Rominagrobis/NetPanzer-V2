@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+<title>Comparisons - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="MPI-library.html#MPI-library" title="MPI library">
+<link rel="prev" href="Calculations.html#Calculations" title="Calculations">
+<link rel="next" href="Bit-manipulations.html#Bit-manipulations" title="Bit manipulations">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Comparisons"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Bit-manipulations.html#Bit-manipulations">Bit manipulations</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Calculations.html#Calculations">Calculations</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="MPI-library.html#MPI-library">MPI library</a>
+<hr>
+</div>
+
+<h3 class="section">12.5 Comparisons</h3>
+
+<p class="noindent">The next 2 functions are used to compare MPIs:
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_cmp</b> (<var>const&nbsp;gcry_mpi_t&nbsp;u<!-- /@w -->, const&nbsp;gcry_mpi_t&nbsp;v<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fcmp-232"></a></var><br>
+<blockquote>
+        <p>Compare the multi-precision-integers number <var>u</var> and <var>v</var>
+returning 0 for equality, a positive value for <var>u</var> &gt; <var>v</var> and a
+negative for <var>u</var> &lt; <var>v</var>.  If both numbers are opaque values
+(cf, gcry_mpi_set_opaque) the comparison is done by checking the bit
+sizes using memcmp.  If only one number is an opaque value, the opaque
+value is less than the other number. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_cmp_ui</b> (<var>const&nbsp;gcry_mpi_t&nbsp;u<!-- /@w -->, unsigned&nbsp;long&nbsp;v<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fcmp_005fui-233"></a></var><br>
+<blockquote>
+        <p>Compare the multi-precision-integers number <var>u</var> with the unsigned
+integer <var>v</var> returning 0 for equality, a positive value for <var>u</var> &gt;
+<var>v</var> and a negative for <var>u</var> &lt; <var>v</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mpi_is_neg</b> (<var>const&nbsp;gcry_mpi_t&nbsp;a<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fis_005fneg-234"></a></var><br>
+<blockquote>
+        <p>Return 1 if <var>a</var> is less than zero; return 0 if zero or positive. 
+</p></blockquote></div>
+
+   </body></html>
+

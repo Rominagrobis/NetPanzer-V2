@@ -1,0 +1,213 @@
+<html lang="en">
+<head>
+<title>Working with MAC algorithms - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Message-Authentication-Codes.html#Message-Authentication-Codes" title="Message Authentication Codes">
+<link rel="prev" href="Available-MAC-algorithms.html#Available-MAC-algorithms" title="Available MAC algorithms">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Working-with-MAC-algorithms"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Available-MAC-algorithms.html#Available-MAC-algorithms">Available MAC algorithms</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Message-Authentication-Codes.html#Message-Authentication-Codes">Message Authentication Codes</a>
+<hr>
+</div>
+
+<h3 class="section">8.2 Working with MAC algorithms</h3>
+
+<p>To use most of these function it is necessary to create a context;
+this is done using:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_open</b> (<var>gcry_mac_hd_t *hd, int algo, unsigned int flags, gcry_ctx_t ctx</var>)<var><a name="index-gcry_005fmac_005fopen-163"></a></var><br>
+<blockquote>
+        <p>Create a MAC object for algorithm <var>algo</var>. <var>flags</var> may be given as an
+bitwise OR of constants described below. <var>hd</var> is guaranteed to either
+receive a valid handle or NULL. <var>ctx</var> is context object to associate MAC
+object with. <var>ctx</var> maybe set to NULL.
+
+        <p>For a list of supported algorithms, see See <a href="Available-MAC-algorithms.html#Available-MAC-algorithms">Available MAC algorithms</a>.
+
+        <p>The flags allowed for <var>mode</var> are:
+
+     <!-- begin table of MAC flags -->
+          <dl>
+<dt><code>GCRY_MAC_FLAG_SECURE</code><dd>Allocate all buffers and the resulting MAC in "secure memory".  Use this if the
+MAC data is highly confidential.
+
+        </dl>
+        <!-- begin table of MAC flags -->
+
+        </blockquote></div>
+   <!-- end function gcry_mac_open -->
+
+   <p>In order to use a handle for performing MAC algorithm operations, a
+`key' has to be set first:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_setkey</b> (<var>gcry_mac_hd_t h, const void *key, size_t keylen</var>)<var><a name="index-gcry_005fmac_005fsetkey-164"></a></var><br>
+<blockquote>
+        <p>Set the MAC key to the value of <var>key</var> of length <var>keylen</var> bytes. With
+HMAC algorithms, there is no restriction on the length of the key. With CMAC
+algorithms, the length of the key is restricted to those supported by the
+underlying block cipher. 
+</p></blockquote></div>
+
+   <p>GMAC algorithms need initialization vector to be set, which can be
+performed with function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_setiv</b> (<var>gcry_mac_hd_t h, const void *iv, size_t ivlen</var>)<var><a name="index-gcry_005fmac_005fsetiv-165"></a></var><br>
+<blockquote>
+        <p>Set the IV to the value of <var>iv</var> of length <var>ivlen</var> bytes. 
+</p></blockquote></div>
+
+   <p>After you are done with the MAC calculation, you should release the resources
+by using:
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mac_close</b> (<var>gcry_mac_hd_t h</var>)<var><a name="index-gcry_005fmac_005fclose-166"></a></var><br>
+<blockquote>
+        <p>Release all resources of MAC context <var>h</var>.  <var>h</var> should not be
+used after a call to this function.  A <code>NULL</code> passed as <var>h</var> is
+ignored.  The function also clears all sensitive information associated
+with this handle. 
+</p></blockquote></div>
+
+   <p>Often you have to do several MAC operations using the same algorithm. 
+To avoid the overhead of creating and releasing context, a reset function
+is provided:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_reset</b> (<var>gcry_mac_hd_t h</var>)<var><a name="index-gcry_005fmac_005freset-167"></a></var><br>
+<blockquote>
+        <p>Reset the current context to its initial state. This is effectively identical
+to a close followed by an open and setting same key.
+
+        <p>Note that gcry_mac_reset is implemented as a macro. 
+</p></blockquote></div>
+
+   <p>Now that we have prepared everything to calculate MAC, it is time to
+see how it is actually done.
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_write</b> (<var>gcry_mac_hd_t h, const void *buffer, size_t length</var>)<var><a name="index-gcry_005fmac_005fwrite-168"></a></var><br>
+<blockquote>
+        <p>Pass <var>length</var> bytes of the data in <var>buffer</var> to the MAC object
+with handle <var>h</var> to update the MAC values. 
+</p></blockquote></div>
+
+   <p>The way to read out the calculated MAC is by using the function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_read</b> (<var>gcry_mac_hd_t h, void *buffer, size_t *length</var>)<var><a name="index-gcry_005fmac_005fread-169"></a></var><br>
+<blockquote>
+        <p><code>gcry_mac_read</code> returns the MAC after finalizing the calculation. 
+Function copies the resulting MAC value to <var>buffer</var> of the length
+<var>length</var>. If <var>length</var> is larger than length of resulting MAC value,
+then length of MAC is returned through <var>length</var>. 
+</p></blockquote></div>
+
+   <p>To compare existing MAC value with recalculated MAC, one is to use the function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_verify</b> (<var>gcry_mac_hd_t h, void *buffer, size_t length</var>)<var><a name="index-gcry_005fmac_005fverify-170"></a></var><br>
+<blockquote>
+        <p><code>gcry_mac_verify</code> finalizes MAC calculation and compares result with
+<var>length</var> bytes of data in <var>buffer</var>. Error code <code>GPG_ERR_CHECKSUM</code>
+is returned if the MAC value in the buffer <var>buffer</var> does not match
+the MAC calculated in object <var>h</var>. 
+</p></blockquote></div>
+
+<!-- *********************************** -->
+<!-- ***** MAC info functions ********** -->
+<!-- *********************************** -->
+   <p>MAC algorithms are identified by internal algorithm numbers (see
+<code>gcry_mac_open</code> for a list).  However, in most applications they are
+used by names, so two functions are available to map between string
+representations and MAC algorithm identifiers.
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_mac_algo_name</b> (<var>int algo</var>)<var><a name="index-gcry_005fmac_005falgo_005fname-171"></a></var><br>
+<blockquote>
+        <p>Map the MAC algorithm id <var>algo</var> to a string representation of the
+algorithm name.  For unknown algorithms this function returns the
+string <code>"?"</code>.  This function should not be used to test for the
+availability of an algorithm. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_mac_map_name</b> (<var>const char *name</var>)<var><a name="index-gcry_005fmac_005fmap_005fname-172"></a></var><br>
+<blockquote>
+        <p>Map the algorithm with <var>name</var> to a MAC algorithm identifier. 
+Returns 0 if the algorithm name is not known. This function should not
+be used to test for the availability of an algorithm. 
+</p></blockquote></div>
+
+   <p>To test whether an algorithm is actually available for use, the
+following macro should be used:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mac_test_algo</b> (<var>int algo</var>)<var><a name="index-gcry_005fmac_005ftest_005falgo-173"></a></var><br>
+<blockquote>
+        <p>The macro returns 0 if the MAC algorithm <var>algo</var> is available for use. 
+</p></blockquote></div>
+
+   <p>If the length of a message digest is not known, it can be retrieved
+using the following function:
+
+<div class="defun">
+&mdash; Function: unsigned int <b>gcry_mac_get_algo_maclen</b> (<var>int algo</var>)<var><a name="index-gcry_005fmac_005fget_005falgo_005fmaclen-174"></a></var><br>
+<blockquote>
+        <p>Retrieve the length in bytes of the MAC yielded by algorithm <var>algo</var>. 
+This is often used prior to <code>gcry_mac_read</code> to allocate sufficient memory
+for the MAC value. On error <code>0</code> is returned. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: unsigned int <b>gcry_mac_get_algo_keylen</b> (<var>algo</var>)<var><a name="index-gcry_005fmac_005fget_005falgo_005fkeylen-175"></a></var><br>
+<blockquote>
+        <p>This function returns length of the key for MAC algorithm <var>algo</var>.  If
+the algorithm supports multiple key lengths, the default supported key
+length is returned.  On error <code>0</code> is returned.  The key length is
+returned as number of octets. 
+</p></blockquote></div>
+
+<!-- ******************************************************* -->
+<!-- *******************  KDF  ***************************** -->
+<!-- ******************************************************* -->
+   </body></html>
+

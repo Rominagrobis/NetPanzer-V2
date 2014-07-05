@@ -1,0 +1,144 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux) (format=etex 2014.4.2)  27 JUN 2014 21:01
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**txiversion.tex
+(./txiversion.tex
+(/home/jeff/development/Netpanzer-V2/masterserver-1.99/libgcrypt-1.6.1/build-au
+x/texinfo.tex Loading texinfo [version 2006-10-04.17]: Basics,
+\bindingoffset=\dimen16
+\normaloffset=\dimen17
+\pagewidth=\dimen18
+\pageheight=\dimen19
+\outerhsize=\dimen20
+\outervsize=\dimen21
+\cornerlong=\dimen22
+\cornerthick=\dimen23
+\topandbottommargin=\dimen24
+\headlinebox=\box16
+\footlinebox=\box17
+\margin=\insert252
+\EMsimple=\toks13
+\groupbox=\box18
+\groupinvalidhelp=\toks14
+\mil=\dimen25
+\exdentamount=\skip18
+\inmarginspacing=\skip19
+ pdf,
+\tempnum=\count27
+\lnkcount=\count28
+\filename=\toks15
+\filenamelength=\count29
+\pgn=\count30
+\toksA=\toks16
+\toksB=\toks17
+\toksC=\toks18
+\toksD=\toks19
+\boxA=\box19
+\countA=\count31
+ fonts,
+\sffam=\fam8
+\textleading=\dimen26
+\fontdepth=\count32
+
+page headings,
+\titlepagetopglue=\skip20
+\titlepagebottomglue=\skip21
+\evenheadline=\toks20
+\oddheadline=\toks21
+\evenfootline=\toks22
+\oddfootline=\toks23
+ tables,
+\tableindent=\dimen27
+\itemindent=\dimen28
+\itemmargin=\dimen29
+\itemmax=\dimen30
+\itemno=\count33
+\multitableparskip=\skip22
+\multitableparindent=\skip23
+\multitablecolspace=\dimen31
+\multitablelinespace=\skip24
+\colcount=\count34
+\everytab=\toks24
+ conditionals,
+\doignorecount=\count35
+ indexing,
+\secondaryindent=\skip25
+\partialpage=\box20
+\doublecolumnhsize=\dimen32
+ sectioning,
+\unnumberedno=\count36
+\chapno=\count37
+\secno=\count38
+\subsecno=\count39
+\subsubsecno=\count40
+\appendixno=\count41
+\absseclevel=\count42
+\secbase=\count43
+\chapheadingskip=\skip26
+\secheadingskip=\skip27
+\subsecheadingskip=\skip28
+ toc,
+\tocfile=\write0
+\contentsrightmargin=\skip29
+\savepageno=\count44
+\lastnegativepageno=\count45
+\tocindent=\dimen33
+ environments,
+\errorbox=\box21
+\lispnarrowing=\skip30
+\envskipamount=\skip31
+\circthick=\dimen34
+\cartouter=\dimen35
+\cartinner=\dimen36
+\normbskip=\skip32
+\normpskip=\skip33
+\normlskip=\skip34
+\lskip=\skip35
+\rskip=\skip36
+\tabw=\dimen37
+
+defuns,
+\defbodyindent=\skip37
+\defargsindent=\skip38
+\deflastargmargin=\skip39
+\parencount=\count46
+\brackcount=\count47
+ macros,
+\paramno=\count48
+\macname=\toks25
+ cross references,
+\auxfile=\write1
+\savesfregister=\count49
+ insertions,
+\footnoteno=\count50
+\SAVEfootins=\box22
+\SAVEmargin=\box23
+
+(/usr/share/texmf/tex/generic/epsf/epsf.tex
+This is `epsf.tex' v2.7.4 <14 February 2011>
+\epsffilein=\read1
+\epsfframemargin=\dimen38
+\epsfframethickness=\dimen39
+\epsfrsize=\dimen40
+\epsftmp=\dimen41
+\epsftsize=\dimen42
+\epsfxsize=\dimen43
+\epsfysize=\dimen44
+\pspoints=\dimen45
+)
+\noepsfhelp=\toks26
+ localization,
+\nolanghelp=\toks27
+\defaultparindent=\dimen46
+ and turning on texinfo input format.) ) 
+Here is how much of TeX's memory you used:
+ 1438 strings out of 494903
+ 15702 string characters out of 6161829
+ 34788 words of memory out of 5000000
+ 3030 multiletter control sequences out of 15000+600000
+ 32127 words of font info for 112 fonts, out of 8000000 for 9000
+ 1269 hyphenation exceptions out of 8191
+ 9i,3n,16p,228b,26s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+No pages of output.

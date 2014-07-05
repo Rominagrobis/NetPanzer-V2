@@ -21,7 +21,7 @@ gpg_error_libs="-lgpg-error"
 gpg_error_cflags=""
 
 # libgcrypt values.
-libs="-lgcrypt -ldl "
+libs="-lgcrypt"
 cflags=""
 
 # API info

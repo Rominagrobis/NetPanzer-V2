@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+<title>Multi-Precision-Integer Subsystem Architecture - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Architecture.html#Architecture" title="Architecture">
+<link rel="prev" href="Hashing-and-MACing-Subsystem-Architecture.html#Hashing-and-MACing-Subsystem-Architecture" title="Hashing and MACing Subsystem Architecture">
+<link rel="next" href="Prime_002dNumber_002dGenerator-Subsystem-Architecture.html#Prime_002dNumber_002dGenerator-Subsystem-Architecture" title="Prime-Number-Generator Subsystem Architecture">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Multi-Precision-Integer-Subsystem-Architecture"></a>
+<a name="Multi_002dPrecision_002dInteger-Subsystem-Architecture"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Prime_002dNumber_002dGenerator-Subsystem-Architecture.html#Prime_002dNumber_002dGenerator-Subsystem-Architecture">Prime-Number-Generator Subsystem Architecture</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Hashing-and-MACing-Subsystem-Architecture.html#Hashing-and-MACing-Subsystem-Architecture">Hashing and MACing Subsystem Architecture</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Architecture.html#Architecture">Architecture</a>
+<hr>
+</div>
+
+<h3 class="section">16.4 Multi-Precision-Integer Subsystem Architecture</h3>
+
+<p>The implementation of Libgcrypt's big integer computation code is
+based on an old release of GNU Multi-Precision Library (GMP).  The
+decision not to use the GMP library directly was due to stalled
+development at that time and due to security requirements which could
+not be provided by the code in GMP.  As GMP does, Libgcrypt provides
+high performance assembler implementations of low level code for
+several CPUS to gain much better performance than with a generic C
+implementation.
+
+<p class="noindent">Major features of Libgcrypt's multi-precision-integer code compared to
+GMP are:
+
+     <ul>
+<li>Avoidance of stack based allocations to allow protection against
+swapping out of sensitive data and for easy zeroing of sensitive
+intermediate results.
+
+     <li>Optional use of secure memory and tracking of its use so that results
+are also put into secure memory.
+
+     <li>MPIs are identified by a handle (implemented as a pointer) to give
+better control over allocations and to augment them with extra
+properties like opaque data.
+
+     <li>Removal of unnecessary code to reduce complexity.
+
+     <li>Functions specialized for public key cryptography.
+
+   </ul>
+
+   </body></html>
+

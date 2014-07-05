@@ -1,0 +1,373 @@
+<html lang="en">
+<head>
+<title>Working with hash algorithms - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Hashing.html#Hashing" title="Hashing">
+<link rel="prev" href="Available-hash-algorithms.html#Available-hash-algorithms" title="Available hash algorithms">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Working-with-hash-algorithms"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Available-hash-algorithms.html#Available-hash-algorithms">Available hash algorithms</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Hashing.html#Hashing">Hashing</a>
+<hr>
+</div>
+
+<h3 class="section">7.2 Working with hash algorithms</h3>
+
+<p>To use most of these function it is necessary to create a context;
+this is done using:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_open</b> (<var>gcry_md_hd_t *hd, int algo, unsigned int flags</var>)<var><a name="index-gcry_005fmd_005fopen-132"></a></var><br>
+<blockquote>
+        <p>Create a message digest object for algorithm <var>algo</var>.  <var>flags</var>
+may be given as an bitwise OR of constants described below.  <var>algo</var>
+may be given as <code>0</code> if the algorithms to use are later set using
+<code>gcry_md_enable</code>. <var>hd</var> is guaranteed to either receive a valid
+handle or NULL.
+
+        <p>For a list of supported algorithms, see See <a href="Available-hash-algorithms.html#Available-hash-algorithms">Available hash algorithms</a>.
+
+        <p>The flags allowed for <var>mode</var> are:
+
+     <!-- begin table of hash flags -->
+          <dl>
+<dt><code>GCRY_MD_FLAG_SECURE</code><dd>Allocate all buffers and the resulting digest in "secure memory".  Use
+this is the hashed data is highly confidential.
+
+          <br><dt><code>GCRY_MD_FLAG_HMAC</code><dd><a name="index-HMAC-133"></a>Turn the algorithm into a HMAC message authentication algorithm.  This
+only works if just one algorithm is enabled for the handle.  Note that
+the function <code>gcry_md_setkey</code> must be used to set the MAC key. 
+The size of the MAC is equal to the message digest of the underlying
+hash algorithm.  If you want CBC message authentication codes based on
+a cipher, see See <a href="Working-with-cipher-handles.html#Working-with-cipher-handles">Working with cipher handles</a>.
+
+          <br><dt><code>GCRY_MD_FLAG_BUGEMU1</code><dd><a name="index-bug-emulation-134"></a>Versions of Libgcrypt before 1.6.0 had a bug in the Whirlpool code
+which led to a wrong result for certain input sizes and write
+patterns.  Using this flag emulates that bug.  This may for example be
+useful for applications which use Whirlpool as part of their key
+generation.  It is strongly suggested to use this flag only if really
+needed and if possible to the data should be re-processed using the
+regular Whirlpool algorithm.
+
+          <p>Note that this flag works for the entire hash context.  If needed
+arises it may be used to enable bug emulation for other hash
+algorithms.  Thus you should not use this flag for a multi-algorithm
+hash context.
+
+        </dl>
+        <!-- begin table of hash flags -->
+
+        <p>You may use the function <code>gcry_md_is_enabled</code> to later check
+whether an algorithm has been enabled.
+
+        </blockquote></div>
+   <!-- end function gcry_md_open -->
+
+   <p>If you want to calculate several hash algorithms at the same time, you
+have to use the following function right after the <code>gcry_md_open</code>:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_enable</b> (<var>gcry_md_hd_t h, int algo</var>)<var><a name="index-gcry_005fmd_005fenable-135"></a></var><br>
+<blockquote>
+        <p>Add the message digest algorithm <var>algo</var> to the digest object
+described by handle <var>h</var>.  Duplicated enabling of algorithms is
+detected and ignored. 
+</p></blockquote></div>
+
+   <p>If the flag <code>GCRY_MD_FLAG_HMAC</code> was used, the key for the MAC must
+be set using the function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_setkey</b> (<var>gcry_md_hd_t h, const void *key, size_t keylen</var>)<var><a name="index-gcry_005fmd_005fsetkey-136"></a></var><br>
+<blockquote>
+        <p>For use with the HMAC feature, set the MAC key to the value of
+<var>key</var> of length <var>keylen</var> bytes.  There is no restriction on
+the length of the key. 
+</p></blockquote></div>
+
+   <p>After you are done with the hash calculation, you should release the
+resources by using:
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_close</b> (<var>gcry_md_hd_t h</var>)<var><a name="index-gcry_005fmd_005fclose-137"></a></var><br>
+<blockquote>
+        <p>Release all resources of hash context <var>h</var>.  <var>h</var> should not be
+used after a call to this function.  A <code>NULL</code> passed as <var>h</var> is
+ignored.  The function also zeroises all sensitive information
+associated with this handle.
+
+        </blockquote></div>
+
+   <p>Often you have to do several hash operations using the same algorithm. 
+To avoid the overhead of creating and releasing context, a reset function
+is provided:
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_reset</b> (<var>gcry_md_hd_t h</var>)<var><a name="index-gcry_005fmd_005freset-138"></a></var><br>
+<blockquote>
+        <p>Reset the current context to its initial state.  This is effectively
+identical to a close followed by an open and enabling all currently
+active algorithms. 
+</p></blockquote></div>
+
+   <p>Often it is necessary to start hashing some data and then continue to
+hash different data.  To avoid hashing the same data several times (which
+might not even be possible if the data is received from a pipe), a
+snapshot of the current hash context can be taken and turned into a new
+context:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_copy</b> (<var>gcry_md_hd_t *handle_dst, gcry_md_hd_t handle_src</var>)<var><a name="index-gcry_005fmd_005fcopy-139"></a></var><br>
+<blockquote>
+        <p>Create a new digest object as an exact copy of the object described by
+handle <var>handle_src</var> and store it in <var>handle_dst</var>.  The context
+is not reset and you can continue to hash data using this context and
+independently using the original context. 
+</p></blockquote></div>
+
+   <p>Now that we have prepared everything to calculate hashes, it is time to
+see how it is actually done.  There are two ways for this, one to
+update the hash with a block of memory and one macro to update the hash
+by just one character.  Both methods can be used on the same hash context.
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_write</b> (<var>gcry_md_hd_t h, const void *buffer, size_t length</var>)<var><a name="index-gcry_005fmd_005fwrite-140"></a></var><br>
+<blockquote>
+        <p>Pass <var>length</var> bytes of the data in <var>buffer</var> to the digest object
+with handle <var>h</var> to update the digest values. This
+function should be used for large blocks of data. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_putc</b> (<var>gcry_md_hd_t h, int c</var>)<var><a name="index-gcry_005fmd_005fputc-141"></a></var><br>
+<blockquote>
+        <p>Pass the byte in <var>c</var> to the digest object with handle <var>h</var> to
+update the digest value.  This is an efficient function, implemented as
+a macro to buffer the data before an actual update. 
+</p></blockquote></div>
+
+   <p>The semantics of the hash functions do not provide for reading out intermediate
+message digests because the calculation must be finalized first.  This
+finalization may for example include the number of bytes hashed in the
+message digest or some padding.
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_final</b> (<var>gcry_md_hd_t h</var>)<var><a name="index-gcry_005fmd_005ffinal-142"></a></var><br>
+<blockquote>
+        <p>Finalize the message digest calculation.  This is not really needed
+because <code>gcry_md_read</code> does this implicitly.  After this has been
+done no further updates (by means of <code>gcry_md_write</code> or
+<code>gcry_md_putc</code> are allowed.  Only the first call to this function
+has an effect. It is implemented as a macro. 
+</p></blockquote></div>
+
+   <p>The way to read out the calculated message digest is by using the
+function:
+
+<div class="defun">
+&mdash; Function: unsigned char * <b>gcry_md_read</b> (<var>gcry_md_hd_t h, int algo</var>)<var><a name="index-gcry_005fmd_005fread-143"></a></var><br>
+<blockquote>
+        <p><code>gcry_md_read</code> returns the message digest after finalizing the
+calculation.  This function may be used as often as required but it will
+always return the same value for one handle.  The returned message digest
+is allocated within the message context and therefore valid until the
+handle is released or reseted (using <code>gcry_md_close</code> or
+<code>gcry_md_reset</code>.  <var>algo</var> may be given as 0 to return the only
+enabled message digest or it may specify one of the enabled algorithms. 
+The function does return <code>NULL</code> if the requested algorithm has not
+been enabled. 
+</p></blockquote></div>
+
+   <p>Because it is often necessary to get the message digest of blocks of
+memory, two fast convenience function are available for this task:
+
+<div class="defun">
+&mdash; Function: gpg_err_code_t <b>gcry_md_hash_buffers</b> (<var> int&nbsp;algo<!-- /@w -->, unsigned&nbsp;int&nbsp;flags<!-- /@w -->, void&nbsp;*digest<!-- /@w -->, const&nbsp;gcry_buffer_t&nbsp;*iov<!-- /@w -->, int&nbsp;iovcnt<!-- /@w --> </var>)<var><a name="index-gcry_005fmd_005fhash_005fbuffers-144"></a></var><br>
+<blockquote>
+        <p><code>gcry_md_hash_buffers</code> is a shortcut function to calculate a
+message digest from several buffers.  This function does not require a
+context and immediately returns the message digest of of the data
+described by <var>iov</var> and <var>iovcnt</var>.  <var>digest</var> must be
+allocated by the caller, large enough to hold the message digest
+yielded by the the specified algorithm <var>algo</var>.  This required size
+may be obtained by using the function <code>gcry_md_get_algo_dlen</code>.
+
+        <p><var>iov</var> is an array of buffer descriptions with <var>iovcnt</var> items. 
+The caller should zero out the structures in this array and for each
+array item set the fields <code>.data</code> to the address of the data to
+be hashed, <code>.len</code> to number of bytes to be hashed.  If <var>.off</var>
+is also set, the data is taken starting at <var>.off</var> bytes from the
+begin of the buffer.  The field <code>.size</code> is not used.
+
+        <p>The only supported flag value for <var>flags</var> is
+<var>GCRY_MD_FLAG_HMAC</var> which turns this function into a HMAC
+function; the first item in <var>iov</var> is then used as the key.
+
+        <p>On success the function returns 0 and stores the resulting hash or MAC
+at <var>digest</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_hash_buffer</b> (<var>int algo, void *digest, const void *buffer, size_t length</var>)<var>;<a name="index-gcry_005fmd_005fhash_005fbuffer-145"></a></var><br>
+<blockquote>
+        <p><code>gcry_md_hash_buffer</code> is a shortcut function to calculate a message
+digest of a buffer.  This function does not require a context and
+immediately returns the message digest of the <var>length</var> bytes at
+<var>buffer</var>.  <var>digest</var> must be allocated by the caller, large
+enough to hold the message digest yielded by the the specified algorithm
+<var>algo</var>.  This required size may be obtained by using the function
+<code>gcry_md_get_algo_dlen</code>.
+
+        <p>Note that in contrast to <code>gcry_md_hash_buffers</code> this function
+will abort the process if an unavailable algorithm is used. 
+</p></blockquote></div>
+
+<!-- *********************************** -->
+<!-- ***** MD info functions *********** -->
+<!-- *********************************** -->
+   <p>Hash algorithms are identified by internal algorithm numbers (see
+<code>gcry_md_open</code> for a list).  However, in most applications they are
+used by names, so two functions are available to map between string
+representations and hash algorithm identifiers.
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_md_algo_name</b> (<var>int algo</var>)<var><a name="index-gcry_005fmd_005falgo_005fname-146"></a></var><br>
+<blockquote>
+        <p>Map the digest algorithm id <var>algo</var> to a string representation of the
+algorithm name.  For unknown algorithms this function returns the
+string <code>"?"</code>.  This function should not be used to test for the
+availability of an algorithm. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_md_map_name</b> (<var>const char *name</var>)<var><a name="index-gcry_005fmd_005fmap_005fname-147"></a></var><br>
+<blockquote>
+        <p>Map the algorithm with <var>name</var> to a digest algorithm identifier. 
+Returns 0 if the algorithm name is not known.  Names representing
+<acronym>ASN.1</acronym> object identifiers are recognized if the <acronym>IETF</acronym>
+dotted format is used and the OID is prefixed with either "<code>oid.</code>"
+or "<code>OID.</code>".  For a list of supported OIDs, see the source code at
+<samp><span class="file">cipher/md.c</span></samp>. This function should not be used to test for the
+availability of an algorithm. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_get_asnoid</b> (<var>int algo, void *buffer, size_t *length</var>)<var><a name="index-gcry_005fmd_005fget_005fasnoid-148"></a></var><br>
+<blockquote>
+        <p>Return an DER encoded ASN.1 OID for the algorithm <var>algo</var> in the
+user allocated <var>buffer</var>. <var>length</var> must point to variable with
+the available size of <var>buffer</var> and receives after return the
+actual size of the returned OID.  The returned error code may be
+<code>GPG_ERR_TOO_SHORT</code> if the provided buffer is to short to receive
+the OID; it is possible to call the function with <code>NULL</code> for
+<var>buffer</var> to have it only return the required size.  The function
+returns 0 on success.
+
+        </blockquote></div>
+
+   <p>To test whether an algorithm is actually available for use, the
+following macro should be used:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_md_test_algo</b> (<var>int algo</var>)<var><a name="index-gcry_005fmd_005ftest_005falgo-149"></a></var><br>
+<blockquote>
+        <p>The macro returns 0 if the algorithm <var>algo</var> is available for use. 
+</p></blockquote></div>
+
+   <p>If the length of a message digest is not known, it can be retrieved
+using the following function:
+
+<div class="defun">
+&mdash; Function: unsigned int <b>gcry_md_get_algo_dlen</b> (<var>int algo</var>)<var><a name="index-gcry_005fmd_005fget_005falgo_005fdlen-150"></a></var><br>
+<blockquote>
+        <p>Retrieve the length in bytes of the digest yielded by algorithm
+<var>algo</var>.  This is often used prior to <code>gcry_md_read</code> to allocate
+sufficient memory for the digest. 
+</p></blockquote></div>
+
+   <p>In some situations it might be hard to remember the algorithm used for
+the ongoing hashing. The following function might be used to get that
+information:
+
+<div class="defun">
+&mdash; Function: int <b>gcry_md_get_algo</b> (<var>gcry_md_hd_t h</var>)<var><a name="index-gcry_005fmd_005fget_005falgo-151"></a></var><br>
+<blockquote>
+        <p>Retrieve the algorithm used with the handle <var>h</var>.  Note that this
+does not work reliable if more than one algorithm is enabled in <var>h</var>. 
+</p></blockquote></div>
+
+   <p>The following macro might also be useful:
+
+<div class="defun">
+&mdash; Function: int <b>gcry_md_is_secure</b> (<var>gcry_md_hd_t h</var>)<var><a name="index-gcry_005fmd_005fis_005fsecure-152"></a></var><br>
+<blockquote>
+        <p>This function returns true when the digest object <var>h</var> is allocated
+in "secure memory"; i.e. <var>h</var> was created with the
+<code>GCRY_MD_FLAG_SECURE</code>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_md_is_enabled</b> (<var>gcry_md_hd_t h, int algo</var>)<var><a name="index-gcry_005fmd_005fis_005fenabled-153"></a></var><br>
+<blockquote>
+        <p>This function returns true when the algorithm <var>algo</var> has been
+enabled for the digest object <var>h</var>. 
+</p></blockquote></div>
+
+   <p>Tracking bugs related to hashing is often a cumbersome task which
+requires to add a lot of printf statements into the code. 
+Libgcrypt provides an easy way to avoid this.  The actual data
+hashed can be written to files on request.
+
+<div class="defun">
+&mdash; Function: void <b>gcry_md_debug</b> (<var>gcry_md_hd_t h, const char *suffix</var>)<var><a name="index-gcry_005fmd_005fdebug-154"></a></var><br>
+<blockquote>
+        <p>Enable debugging for the digest object with handle <var>h</var>.  This
+creates create files named <samp><span class="file">dbgmd-&lt;n&gt;.&lt;string&gt;</span></samp> while doing the
+actual hashing.  <var>suffix</var> is the string part in the filename.  The
+number is a counter incremented for each new hashing.  The data in the
+file is the raw data as passed to <code>gcry_md_write</code> or
+<code>gcry_md_putc</code>.  If <code>NULL</code> is used for <var>suffix</var>, the
+debugging is stopped and the file closed.  This is only rarely required
+because <code>gcry_md_close</code> implicitly stops debugging. 
+</p></blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- *******************  MAC Functions  ********************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

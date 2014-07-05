@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+<title>Used S-expressions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Public-Key-cryptography.html#Public-Key-cryptography" title="Public Key cryptography">
+<link rel="prev" href="Available-algorithms.html#Available-algorithms" title="Available algorithms">
+<link rel="next" href="Cryptographic-Functions.html#Cryptographic-Functions" title="Cryptographic Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Used-S-expressions"></a>
+<a name="Used-S_002dexpressions"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Cryptographic-Functions.html#Cryptographic-Functions">Cryptographic Functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Available-algorithms.html#Available-algorithms">Available algorithms</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Public-Key-cryptography.html#Public-Key-cryptography">Public Key cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">6.2 Used S-expressions</h3>
+
+<p>Libgcrypt's API for asymmetric cryptography is based on data structures
+called S-expressions (see
+<a href="http://people.csail.mit.edu/rivest/sexp.html">http://people.csail.mit.edu/rivest/sexp.html</a>) and does not work
+with contexts as most of the other building blocks of Libgcrypt do.
+
+<p class="noindent">The following information are stored in S-expressions:
+
+     <ul>
+<li>keys
+
+     <li>plain text data
+
+     <li>encrypted data
+
+     <li>signatures
+
+   </ul>
+
+<p class="noindent">To describe how Libgcrypt expect keys, we use examples. Note that
+words in
+uppercase
+indicate parameters whereas lowercase words are literals.
+
+   <p>Note that all MPI (multi-precision-integers) values are expected to be in
+<code>GCRYMPI_FMT_USG</code> format.  An easy way to create S-expressions is
+by using <code>gcry_sexp_build</code> which allows to pass a string with
+printf-like escapes to insert MPI values.
+
+<ul class="menu">
+<li><a accesskey="1" href="RSA-key-parameters.html#RSA-key-parameters">RSA key parameters</a>:   Parameters used with an RSA key. 
+<li><a accesskey="2" href="DSA-key-parameters.html#DSA-key-parameters">DSA key parameters</a>:   Parameters used with a DSA key. 
+<li><a accesskey="3" href="ECC-key-parameters.html#ECC-key-parameters">ECC key parameters</a>:   Parameters used with ECC keys. 
+</ul>
+
+   </body></html>
+

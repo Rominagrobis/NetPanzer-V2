@@ -1,0 +1,101 @@
+<html lang="en">
+<head>
+<title>Prime-Number-Generator Subsystem Architecture - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Architecture.html#Architecture" title="Architecture">
+<link rel="prev" href="Multi_002dPrecision_002dInteger-Subsystem-Architecture.html#Multi_002dPrecision_002dInteger-Subsystem-Architecture" title="Multi-Precision-Integer Subsystem Architecture">
+<link rel="next" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture" title="Random-Number Subsystem Architecture">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Prime-Number-Generator-Subsystem-Architecture"></a>
+<a name="Prime_002dNumber_002dGenerator-Subsystem-Architecture"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture">Random-Number Subsystem Architecture</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Multi_002dPrecision_002dInteger-Subsystem-Architecture.html#Multi_002dPrecision_002dInteger-Subsystem-Architecture">Multi-Precision-Integer Subsystem Architecture</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Architecture.html#Architecture">Architecture</a>
+<hr>
+</div>
+
+<h3 class="section">16.5 Prime-Number-Generator Subsystem Architecture</h3>
+
+<p>Libgcrypt provides an interface to its prime number generator.  These
+functions make use of the internal prime number generator which is
+required for the generation for public key key pairs.  The plain prime
+checking function is exported as well.
+
+   <p>The generation of random prime numbers is based on the Lim and Lee
+algorithm to create practically save primes.<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>
+This algorithm creates a pool of smaller primes, select a few of them
+to create candidate primes of the form 2 * p_0 * p_1 * ... * p_n
++ 1, tests the candidate for primality and permutates the pool until
+a prime has been found.  It is possible to clamp one of the small
+primes to a certain size to help DSA style algorithms.  Because most
+of the small primes in the pool are not used for the resulting prime
+number, they are saved for later use (see <code>save_pool_prime</code> and
+<code>get_pool_prime</code> in <samp><span class="file">cipher/primegen.c</span></samp>).  The prime
+generator optionally supports the finding of an appropriate generator.
+
+<p class="noindent">The primality test works in three steps:
+
+     <ol type=1 start=1>
+<li>The standard sieve algorithm using the primes up to 4999 is used as a
+quick first check.
+
+     <li>A Fermat test filters out almost all non-primes.
+
+     <li>A 5 round Rabin-Miller test is finally used.  The first round uses a
+witness of 2, whereas the next rounds use a random witness.
+
+        </ol>
+
+   <p>To support the generation of RSA and DSA keys in FIPS mode according
+to X9.31 and FIPS 186-2, Libgcrypt implements two additional prime
+generation functions: <code>_gcry_derive_x931_prime</code> and
+<code>_gcry_generate_fips186_2_prime</code>.  These functions are internal
+and not available through the public API.
+
+   <div class="footnote">
+<hr>
+<h4>Notes de bas de page</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> Chae Hoon Lim
+and Pil Joong Lee. A key recovery attack on discrete log-based schemes
+using a prime order subgroup. In Burton S. Kaliski Jr., editor,
+Advances in Cryptology: Crypto '97, pages 249­-263, Berlin /
+Heidelberg / New York, 1997. Springer-Verlag.  Described on page 260.</p>
+
+   <hr></div>
+
+   </body></html>
+

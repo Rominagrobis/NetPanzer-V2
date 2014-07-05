@@ -1,0 +1,282 @@
+<html lang="en">
+<head>
+<title>Working with cipher handles - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Symmetric-cryptography.html#Symmetric-cryptography" title="Symmetric cryptography">
+<link rel="prev" href="Available-cipher-modes.html#Available-cipher-modes" title="Available cipher modes">
+<link rel="next" href="General-cipher-functions.html#General-cipher-functions" title="General cipher functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Working-with-cipher-handles"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="General-cipher-functions.html#General-cipher-functions">General cipher functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Available-cipher-modes.html#Available-cipher-modes">Available cipher modes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Symmetric-cryptography.html#Symmetric-cryptography">Symmetric cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">5.3 Working with cipher handles</h3>
+
+<p>To use a cipher algorithm, you must first allocate an according
+handle.  This is to be done using the open function:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_open</b> (<var>gcry_cipher_hd_t *hd, int algo, int mode, unsigned int flags</var>)<var><a name="index-gcry_005fcipher_005fopen-74"></a></var><br>
+<blockquote>
+        <p>This function creates the context handle required for most of the
+other cipher functions and returns a handle to it in `hd'.  In case of
+an error, an according error code is returned.
+
+        <p>The ID of algorithm to use must be specified via <var>algo</var>.  See
+See <a href="Available-ciphers.html#Available-ciphers">Available ciphers</a>, for a list of supported ciphers and the
+according constants.
+
+        <p>Besides using the constants directly, the function
+<code>gcry_cipher_map_name</code> may be used to convert the textual name of
+an algorithm into the according numeric ID.
+
+        <p>The cipher mode to use must be specified via <var>mode</var>.  See
+See <a href="Available-cipher-modes.html#Available-cipher-modes">Available cipher modes</a>, for a list of supported cipher modes
+and the according constants.  Note that some modes are incompatible
+with some algorithms - in particular, stream mode
+(<code>GCRY_CIPHER_MODE_STREAM</code>) only works with stream ciphers. The
+block cipher modes (<code>GCRY_CIPHER_MODE_ECB</code>,
+<code>GCRY_CIPHER_MODE_CBC</code>, <code>GCRY_CIPHER_MODE_CFB</code>,
+<code>GCRY_CIPHER_MODE_OFB</code> and <code>GCRY_CIPHER_MODE_CTR</code>) will work
+with any block cipher algorithm. <code>GCRY_CIPHER_MODE_CCM</code> and
+<code>GCRY_CIPHER_MODE_GCM</code> modes will only work with block cipher algorithms
+which have the block size of 16 bytes.
+
+        <p>The third argument <var>flags</var> can either be passed as <code>0</code> or as
+the bit-wise OR of the following constants.
+
+          <dl>
+<dt><code>GCRY_CIPHER_SECURE</code><dd>Make sure that all operations are allocated in secure memory.  This is
+useful when the key material is highly confidential. 
+<br><dt><code>GCRY_CIPHER_ENABLE_SYNC</code><dd><a name="index-sync-mode-_0028OpenPGP_0029-75"></a>This flag enables the CFB sync mode, which is a special feature of
+Libgcrypt's CFB mode implementation to allow for OpenPGP's CFB variant. 
+See <code>gcry_cipher_sync</code>. 
+<br><dt><code>GCRY_CIPHER_CBC_CTS</code><dd><a name="index-cipher-text-stealing-76"></a>Enable cipher text stealing (CTS) for the CBC mode.  Cannot be used
+simultaneous as GCRY_CIPHER_CBC_MAC.  CTS mode makes it possible to
+transform data of almost arbitrary size (only limitation is that it
+must be greater than the algorithm's block size). 
+<br><dt><code>GCRY_CIPHER_CBC_MAC</code><dd><a name="index-CBC_002dMAC-77"></a>Compute CBC-MAC keyed checksums.  This is the same as CBC mode, but
+only output the last block.  Cannot be used simultaneous as
+GCRY_CIPHER_CBC_CTS. 
+</dl>
+        </p></blockquote></div>
+
+   <p>Use the following function to release an existing handle:
+
+<div class="defun">
+&mdash; Function: void <b>gcry_cipher_close</b> (<var>gcry_cipher_hd_t h</var>)<var><a name="index-gcry_005fcipher_005fclose-78"></a></var><br>
+<blockquote>
+        <p>This function releases the context created by <code>gcry_cipher_open</code>. 
+It also zeroises all sensitive information associated with this cipher
+handle. 
+</p></blockquote></div>
+
+   <p>In order to use a handle for performing cryptographic operations, a
+`key' has to be set first:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_setkey</b> (<var>gcry_cipher_hd_t h, const void *k, size_t l</var>)<var><a name="index-gcry_005fcipher_005fsetkey-79"></a></var><br>
+<blockquote>
+        <p>Set the key <var>k</var> used for encryption or decryption in the context
+denoted by the handle <var>h</var>.  The length <var>l</var> (in bytes) of the
+key <var>k</var> must match the required length of the algorithm set for
+this context or be in the allowed range for algorithms with variable
+key size.  The function checks this and returns an error if there is a
+problem.  A caller should always check for an error.
+
+        </blockquote></div>
+
+   <p>Most crypto modes requires an initialization vector (IV), which
+usually is a non-secret random string acting as a kind of salt value. 
+The CTR mode requires a counter, which is also similar to a salt
+value.  To set the IV or CTR, use these functions:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_setiv</b> (<var>gcry_cipher_hd_t h, const void *k, size_t l</var>)<var><a name="index-gcry_005fcipher_005fsetiv-80"></a></var><br>
+<blockquote>
+        <p>Set the initialization vector used for encryption or decryption. The
+vector is passed as the buffer <var>K</var> of length <var>l</var> bytes and
+copied to internal data structures.  The function checks that the IV
+matches the requirement of the selected algorithm and mode.
+
+        <p>This function is also used with the Salsa20 stream cipher to set or
+update the required nonce.  In this case it needs to be called after
+setting the key.
+
+        <p>This function is also used with the AEAD cipher modes to set or
+update the required nonce.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_setctr</b> (<var>gcry_cipher_hd_t h, const void *c, size_t l</var>)<var><a name="index-gcry_005fcipher_005fsetctr-81"></a></var><br>
+<blockquote>
+        <p>Set the counter vector used for encryption or decryption. The counter
+is passed as the buffer <var>c</var> of length <var>l</var> bytes and copied to
+internal data structures.  The function checks that the counter
+matches the requirement of the selected algorithm (i.e., it must be
+the same size as the block size). 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_reset</b> (<var>gcry_cipher_hd_t h</var>)<var><a name="index-gcry_005fcipher_005freset-82"></a></var><br>
+<blockquote>
+        <p>Set the given handle's context back to the state it had after the last
+call to gcry_cipher_setkey and clear the initialization vector.
+
+        <p>Note that gcry_cipher_reset is implemented as a macro. 
+</p></blockquote></div>
+
+   <p>Authenticated Encryption with Associated Data (AEAD) block cipher
+modes require the handling of the authentication tag and the additional
+authenticated data, which can be done by using the following
+functions:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_authenticate</b> (<var>gcry_cipher_hd_t h, const void *abuf, size_t abuflen</var>)<var><a name="index-gcry_005fcipher_005fauthenticate-83"></a></var><br>
+<blockquote>
+        <p>Process the buffer <var>abuf</var> of length <var>abuflen</var> as the additional
+authenticated data (AAD) for AEAD cipher modes.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_gettag</b> (<var>gcry_cipher_hd_t h, void *tag, size_t taglen</var>)<var><a name="index-gcry_005fcipher_005fgettag-84"></a></var><br>
+<blockquote>
+        <p>This function is used to read the authentication tag after encryption. 
+The function finalizes and outputs the authentication tag to the buffer
+<var>tag</var> of length <var>taglen</var> bytes.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_checktag</b> (<var>gcry_cipher_hd_t h, const void *tag, size_t taglen</var>)<var><a name="index-gcry_005fcipher_005fchecktag-85"></a></var><br>
+<blockquote>
+        <p>Check the authentication tag after decryption. The authentication
+tag is passed as the buffer <var>tag</var> of length <var>taglen</var> bytes
+and compared to internal authentication tag computed during
+decryption.  Error code <code>GPG_ERR_CHECKSUM</code> is returned if
+the authentication tag in the buffer <var>tag</var> does not match
+the authentication tag calculated during decryption.
+
+        </blockquote></div>
+
+   <p>The actual encryption and decryption is done by using one of the
+following functions.  They may be used as often as required to process
+all the data.
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_encrypt</b> (<var>gcry_cipher_hd_t h, unsigned char *out, size_t outsize, const unsigned char *in, size_t inlen</var>)<var><a name="index-gcry_005fcipher_005fencrypt-86"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_encrypt</code> is used to encrypt the data.  This function
+can either work in place or with two buffers.  It uses the cipher
+context already setup and described by the handle <var>h</var>.  There are 2
+ways to use the function: If <var>in</var> is passed as <code>NULL</code> and
+<var>inlen</var> is <code>0</code>, in-place encryption of the data in <var>out</var> or
+length <var>outsize</var> takes place.  With <var>in</var> being not <code>NULL</code>,
+<var>inlen</var> bytes are encrypted to the buffer <var>out</var> which must have
+at least a size of <var>inlen</var>.  <var>outsize</var> must be set to the
+allocated size of <var>out</var>, so that the function can check that there
+is sufficient space. Note that overlapping buffers are not allowed.
+
+        <p>Depending on the selected algorithms and encryption mode, the length of
+the buffers must be a multiple of the block size.
+
+        <p>The function returns <code>0</code> on success or an error code. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_decrypt</b> (<var>gcry_cipher_hd_t h, unsigned char *out, size_t outsize, const unsigned char *in, size_t inlen</var>)<var><a name="index-gcry_005fcipher_005fdecrypt-87"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_decrypt</code> is used to decrypt the data.  This function
+can either work in place or with two buffers.  It uses the cipher
+context already setup and described by the handle <var>h</var>.  There are 2
+ways to use the function: If <var>in</var> is passed as <code>NULL</code> and
+<var>inlen</var> is <code>0</code>, in-place decryption of the data in <var>out</var> or
+length <var>outsize</var> takes place.  With <var>in</var> being not <code>NULL</code>,
+<var>inlen</var> bytes are decrypted to the buffer <var>out</var> which must have
+at least a size of <var>inlen</var>.  <var>outsize</var> must be set to the
+allocated size of <var>out</var>, so that the function can check that there
+is sufficient space.  Note that overlapping buffers are not allowed.
+
+        <p>Depending on the selected algorithms and encryption mode, the length of
+the buffers must be a multiple of the block size.
+
+        <p>The function returns <code>0</code> on success or an error code. 
+</p></blockquote></div>
+
+   <p>OpenPGP (as defined in RFC-2440) requires a special sync operation in
+some places.  The following function is used for this:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_sync</b> (<var>gcry_cipher_hd_t h</var>)<var><a name="index-gcry_005fcipher_005fsync-88"></a></var><br>
+<blockquote>
+        <p>Perform the OpenPGP sync operation on context <var>h</var>.  Note that this
+is a no-op unless the context was created with the flag
+<code>GCRY_CIPHER_ENABLE_SYNC</code>
+</p></blockquote></div>
+
+   <p>Some of the described functions are implemented as macros utilizing a
+catch-all control function.  This control function is rarely used
+directly but there is nothing which would inhibit it:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_ctl</b> (<var>gcry_cipher_hd_t h, int cmd, void *buffer, size_t buflen</var>)<var><a name="index-gcry_005fcipher_005fctl-89"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_ctl</code> controls various aspects of the cipher module and
+specific cipher contexts.  Usually some more specialized functions or
+macros are used for this purpose.  The semantics of the function and its
+parameters depends on the the command <var>cmd</var> and the passed context
+handle <var>h</var>.  Please see the comments in the source code
+(<code>src/global.c</code>) for details. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_info</b> (<var>gcry_cipher_hd_t h, int what, void *buffer, size_t *nbytes</var>)<var><a name="index-gcry_005fcipher_005finfo-90"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_info</code> is used to retrieve various
+information about a cipher context or the cipher module in general.
+
+        <p>Currently no information is available. 
+</p></blockquote></div>
+
+   </body></html>
+

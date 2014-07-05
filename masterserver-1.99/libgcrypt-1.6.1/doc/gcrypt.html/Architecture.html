@@ -1,0 +1,113 @@
+<html lang="en">
+<head>
+<title>Architecture - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Tools.html#Tools" title="Tools">
+<link rel="next" href="Self_002dTests.html#Self_002dTests" title="Self-Tests">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Architecture"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Self_002dTests.html#Self_002dTests">Self-Tests</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Tools.html#Tools">Tools</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">16 Architecture</h2>
+
+<p>This chapter describes the internal architecture of Libgcrypt.
+
+   <p>Libgcrypt is a function library written in ISO C-90.  Any compliant
+compiler should be able to build Libgcrypt as long as the target is
+either a POSIX platform or compatible to the API used by Windows NT. 
+Provisions have been take so that the library can be directly used from
+C++ applications; however building with a C++ compiler is not supported.
+
+   <p>Building Libgcrypt is done by using the common <code>./configure &amp;&amp; make</code>
+approach.  The configure command is included in the source distribution
+and as a portable shell script it works on any Unix-alike system.  The
+result of running the configure script are a C header file
+(<samp><span class="file">config.h</span></samp>), customized Makefiles, the setup of symbolic links and
+a few other things.  After that the make tool builds and optionally
+installs the library and the documentation.  See the files
+<samp><span class="file">INSTALL</span></samp> and <samp><span class="file">README</span></samp> in the source distribution on how to do
+this.
+
+   <p>Libgcrypt is developed using a Subversion<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a> repository.  Although all released
+versions are tagged in this repository, they should not be used to build
+production versions of Libgcrypt.  Instead released tarballs should be
+used.  These tarballs are available from several places with the master
+copy at &lt;<code>ftp://ftp.gnupg.org/gcrypt/libgcrypt/</code>&gt;. 
+Announcements of new releases are posted to the
+&lt;<code>gnupg-announce@gnupg.org</code>&gt; mailing list<a rel="footnote" href="#fn-2" name="fnd-2"><sup>2</sup></a>.
+
+   <div class="float">
+<a name="fig_003asubsystems"></a>
+<div align="center"><img src="libgcrypt-modules.png" alt="Libgcrypt subsystems"></div>
+   <p><strong class="float-caption">Figure   16.1: Libgcrypt subsystems</strong></p></div>
+
+   <p>Libgcrypt consists of several subsystems (see <a href="fig_003asubsystems.html#fig_003asubsystems">Figure   16.1</a>) and
+all these subsystems provide a public API; this includes the helper
+subsystems like the one for S-expressions.  The API style depends on the
+subsystem; in general an open-use-close approach is implemented.  The
+open returns a handle to a context used for all further operations on
+this handle, several functions may then be used on this handle and a
+final close function releases all resources associated with the handle.
+
+<ul class="menu">
+<li><a accesskey="1" href="Public_002dKey-Subsystem-Architecture.html#Public_002dKey-Subsystem-Architecture">Public-Key Subsystem Architecture</a>:               About public keys. 
+<li><a accesskey="2" href="Symmetric-Encryption-Subsystem-Architecture.html#Symmetric-Encryption-Subsystem-Architecture">Symmetric Encryption Subsystem Architecture</a>:     About standard ciphers. 
+<li><a accesskey="3" href="Hashing-and-MACing-Subsystem-Architecture.html#Hashing-and-MACing-Subsystem-Architecture">Hashing and MACing Subsystem Architecture</a>:       About hashing. 
+<li><a accesskey="4" href="Multi_002dPrecision_002dInteger-Subsystem-Architecture.html#Multi_002dPrecision_002dInteger-Subsystem-Architecture">Multi-Precision-Integer Subsystem Architecture</a>:  About big integers. 
+<li><a accesskey="5" href="Prime_002dNumber_002dGenerator-Subsystem-Architecture.html#Prime_002dNumber_002dGenerator-Subsystem-Architecture">Prime-Number-Generator Subsystem Architecture</a>:   About prime numbers. 
+<li><a accesskey="6" href="Random_002dNumber-Subsystem-Architecture.html#Random_002dNumber-Subsystem-Architecture">Random-Number Subsystem Architecture</a>:            About random stuff. 
+<!-- * Helper Subsystems Architecture::                 About other stuff. -->
+</ul>
+
+   <div class="footnote">
+<hr>
+<h4>Notes de bas de page</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> A version control
+system available for many platforms</p>
+
+   <p class="footnote"><small>[<a name="fn-2" href="#fnd-2">2</a>]</small> See
+<a href="http://www.gnupg.org/documentation/mailing-lists.en.html">http://www.gnupg.org/documentation/mailing-lists.en.html</a> for
+details.</p>
+
+   <hr></div>
+
+   </body></html>
+

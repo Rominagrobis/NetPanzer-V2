@@ -1,0 +1,103 @@
+<html lang="en">
+<head>
+<title>Public-Key Subsystem Architecture - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Architecture.html#Architecture" title="Architecture">
+<link rel="next" href="Symmetric-Encryption-Subsystem-Architecture.html#Symmetric-Encryption-Subsystem-Architecture" title="Symmetric Encryption Subsystem Architecture">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Public-Key-Subsystem-Architecture"></a>
+<a name="Public_002dKey-Subsystem-Architecture"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Symmetric-Encryption-Subsystem-Architecture.html#Symmetric-Encryption-Subsystem-Architecture">Symmetric Encryption Subsystem Architecture</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Architecture.html#Architecture">Architecture</a>
+<hr>
+</div>
+
+<h3 class="section">16.1 Public-Key Architecture</h3>
+
+<p>Because public key cryptography is almost always used to process small
+amounts of data (hash values or session keys), the interface is not
+implemented using the open-use-close paradigm, but with single
+self-contained functions.  Due to the wide variety of parameters
+required by different algorithms S-expressions, as flexible way to
+convey these parameters, are used.  There is a set of helper functions
+to work with these S-expressions. 
+<!-- see @xref{S-expression Subsystem Architecture}. -->
+
+   <p>Aside of functions to register new algorithms, map algorithms names to
+algorithms identifiers and to lookup properties of a key, the
+following main functions are available:
+
+     <dl>
+<dt><code>gcry_pk_encrypt</code><dd>Encrypt data using a public key.
+
+     <br><dt><code>gcry_pk_decrypt</code><dd>Decrypt data using a private key.
+
+     <br><dt><code>gcry_pk_sign</code><dd>Sign data using a private key.
+
+     <br><dt><code>gcry_pk_verify</code><dd>Verify that a signature matches the data.
+
+     <br><dt><code>gcry_pk_testkey</code><dd>Perform a consistency over a public or private key.
+
+     <br><dt><code>gcry_pk_genkey</code><dd>Create a new public/private key pair.
+
+   </dl>
+
+   <p>All these functions
+lookup the module implementing the algorithm and pass the actual work
+to that module.  The parsing of the S-expression input and the
+construction of S-expression for the return values is done by the high
+level code (<samp><span class="file">cipher/pubkey.c</span></samp>).  Thus the internal interface
+between the algorithm modules and the high level functions passes data
+in a custom format.
+
+   <p>By default Libgcrypt uses a blinding technique for RSA decryption to
+mitigate real world timing attacks over a network: Instead of using
+the RSA decryption directly, a blinded value y = x r^e \bmod n
+is decrypted and the unblinded value x' = y' r^-1 \bmod n
+returned.  The blinding value r is a random value with the size
+of the modulus n and generated with <code>GCRY_WEAK_RANDOM</code>
+random level.
+
+   <p><a name="index-X9_002e31-279"></a><a name="index-FIPS-186-280"></a>The algorithm used for RSA and DSA key generation depends on whether
+Libgcrypt is operated in standard or in FIPS mode.  In standard mode
+an algorithm based on the Lim-Lee prime number generator is used.  In
+FIPS mode RSA keys are generated as specified in ANSI X9.31 (1998) and
+DSA keys as specified in FIPS 186-2.
+
+   </body></html>
+

@@ -1,0 +1,145 @@
+<html lang="en">
+<head>
+<title>Available MAC algorithms - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Message-Authentication-Codes.html#Message-Authentication-Codes" title="Message Authentication Codes">
+<link rel="next" href="Working-with-MAC-algorithms.html#Working-with-MAC-algorithms" title="Working with MAC algorithms">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Available-MAC-algorithms"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Working-with-MAC-algorithms.html#Working-with-MAC-algorithms">Working with MAC algorithms</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Message-Authentication-Codes.html#Message-Authentication-Codes">Message Authentication Codes</a>
+<hr>
+</div>
+
+<h3 class="section">8.1 Available MAC algorithms</h3>
+
+<!-- begin table of MAC algorithms -->
+<p><a name="index-HMAC_002dSHA_002d1-155"></a><a name="index-HMAC_002dSHA_002d224_002c-HMAC_002dSHA_002d256_002c-HMAC_002dSHA_002d384_002c-HMAC_002dSHA_002d512-156"></a><a name="index-HMAC_002dRIPE_002dMD_002d160-157"></a><a name="index-HMAC_002dMD2_002c-HMAC_002dMD4_002c-HMAC_002dMD5-158"></a><a name="index-HMAC_002dTIGER1-159"></a><a name="index-HMAC_002dWhirlpool-160"></a><a name="index-HMAC_002dStribog_002d256_002c-HMAC_002dStribog_002d512-161"></a><a name="index-HMAC_002dGOSTR_002d3411_002d94-162"></a>
+     <dl>
+<dt><code>GCRY_MAC_NONE</code><dd>This is not a real algorithm but used by some functions as an error
+return value.  This constant is guaranteed to have the value <code>0</code>.
+
+     <br><dt><code>GCRY_MAC_HMAC_SHA256</code><dd>This is keyed-hash message authentication code (HMAC) message authentication
+algorithm based on the SHA-256 hash algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_SHA224</code><dd>This is HMAC message authentication algorithm based on the SHA-224 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_SHA512</code><dd>This is HMAC message authentication algorithm based on the SHA-512 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_SHA384</code><dd>This is HMAC message authentication algorithm based on the SHA-384 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_SHA1</code><dd>This is HMAC message authentication algorithm based on the SHA-1 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_MD5</code><dd>This is HMAC message authentication algorithm based on the MD5 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_MD4</code><dd>This is HMAC message authentication algorithm based on the MD4 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_RMD160</code><dd>This is HMAC message authentication algorithm based on the RIPE-MD-160 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_WHIRLPOOL</code><dd>This is HMAC message authentication algorithm based on the WHIRLPOOL hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_GOSTR3411_94</code><dd>This is HMAC message authentication algorithm based on the GOST R 34.11-94 hash
+algorithm.
+
+     <br><dt><code>GCRY_MAC_HMAC_STRIBOG256</code><dd>This is HMAC message authentication algorithm based on the 256-bit hash
+algorithm described in GOST R 34.11-2012.
+
+     <br><dt><code>GCRY_MAC_HMAC_STRIBOG512</code><dd>This is HMAC message authentication algorithm based on the 512-bit hash
+algorithm described in GOST R 34.11-2012.
+
+     <br><dt><code>GCRY_MAC_CMAC_AES</code><dd>This is CMAC (Cipher-based MAC) message authentication algorithm based on
+the AES block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_3DES</code><dd>This is CMAC message authentication algorithm based on the three-key EDE
+Triple-DES block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_CAMELLIA</code><dd>This is CMAC message authentication algorithm based on the Camellia block cipher
+algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_CAST5</code><dd>This is CMAC message authentication algorithm based on the CAST128-5
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_BLOWFISH</code><dd>This is CMAC message authentication algorithm based on the Blowfish
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_TWOFISH</code><dd>This is CMAC message authentication algorithm based on the Twofish
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_SERPENT</code><dd>This is CMAC message authentication algorithm based on the Serpent
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_SEED</code><dd>This is CMAC message authentication algorithm based on the SEED
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_RFC2268</code><dd>This is CMAC message authentication algorithm based on the Ron's Cipher 2
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_IDEA</code><dd>This is CMAC message authentication algorithm based on the IDEA
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_CMAC_GOST28147</code><dd>This is CMAC message authentication algorithm based on the GOST 28147-89
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_GMAC_AES</code><dd>This is GMAC (GCM mode based MAC) message authentication algorithm based on
+the AES block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_GMAC_CAMELLIA</code><dd>This is GMAC message authentication algorithm based on the Camellia
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_GMAC_TWOFISH</code><dd>This is GMAC message authentication algorithm based on the Twofish
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_GMAC_SERPENT</code><dd>This is GMAC message authentication algorithm based on the Serpent
+block cipher algorithm.
+
+     <br><dt><code>GCRY_MAC_GMAC_SEED</code><dd>This is GMAC message authentication algorithm based on the SEED
+block cipher algorithm.
+
+   </dl>
+   <!-- end table of MAC algorithms -->
+
+   </body></html>
+

@@ -1,0 +1,126 @@
+<html lang="en">
+<head>
+<title>MPI formats - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="MPI-library.html#MPI-library" title="MPI library">
+<link rel="prev" href="Basic-functions.html#Basic-functions" title="Basic functions">
+<link rel="next" href="Calculations.html#Calculations" title="Calculations">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="MPI-formats"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Calculations.html#Calculations">Calculations</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basic-functions.html#Basic-functions">Basic functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="MPI-library.html#MPI-library">MPI library</a>
+<hr>
+</div>
+
+<h3 class="section">12.3 MPI formats</h3>
+
+<p class="noindent">The following functions are used to convert between an external
+representation of an MPI and the internal one of Libgcrypt.
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mpi_scan</b> (<var>gcry_mpi_t&nbsp;*r_mpi<!-- /@w -->, enum&nbsp;gcry_mpi_format&nbsp;format<!-- /@w -->, const&nbsp;unsigned&nbsp;char&nbsp;*buffer<!-- /@w -->, size_t&nbsp;buflen<!-- /@w -->, size_t&nbsp;*nscanned<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fscan-213"></a></var><br>
+<blockquote>
+        <p>Convert the external representation of an integer stored in <var>buffer</var>
+with a length of <var>buflen</var> into a newly created MPI returned which
+will be stored at the address of <var>r_mpi</var>.  For certain formats the
+length argument is not required and should be passed as <code>0</code>.  After a
+successful operation the variable <var>nscanned</var> receives the number of
+bytes actually scanned unless <var>nscanned</var> was given as
+<code>NULL</code>. <var>format</var> describes the format of the MPI as stored in
+<var>buffer</var>:
+
+          <dl>
+<dt><code>GCRYMPI_FMT_STD</code><dd>2-complement stored without a length header.  Note that
+<code>gcry_mpi_print</code> stores a <code>0</code> as a string of zero length.
+
+          <br><dt><code>GCRYMPI_FMT_PGP</code><dd>As used by OpenPGP (only defined as unsigned). This is basically
+<code>GCRYMPI_FMT_STD</code> with a 2 byte big endian length header.
+
+          <br><dt><code>GCRYMPI_FMT_SSH</code><dd>As used in the Secure Shell protocol.  This is <code>GCRYMPI_FMT_STD</code>
+with a 4 byte big endian header.
+
+          <br><dt><code>GCRYMPI_FMT_HEX</code><dd>Stored as a string with each byte of the MPI encoded as 2 hex digits. 
+Negative numbers are prefix with a minus sign and in addition the
+high bit is always zero to make clear that an explicit sign ist used. 
+When using this format, <var>buflen</var> must be zero.
+
+          <br><dt><code>GCRYMPI_FMT_USG</code><dd>Simple unsigned integer. 
+</dl>
+
+     <p class="noindent">Note that all of the above formats store the integer in big-endian
+format (MSB first). 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mpi_print</b> (<var>enum&nbsp;gcry_mpi_format&nbsp;format<!-- /@w -->, unsigned&nbsp;char&nbsp;*buffer<!-- /@w -->, size_t&nbsp;buflen<!-- /@w -->, size_t&nbsp;*nwritten<!-- /@w -->, const&nbsp;gcry_mpi_t&nbsp;a<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fprint-214"></a></var><br>
+<blockquote>
+        <p>Convert the MPI <var>a</var> into an external representation described by
+<var>format</var> (see above) and store it in the provided <var>buffer</var>
+which has a usable length of at least the <var>buflen</var> bytes. If
+<var>nwritten</var> is not NULL, it will receive the number of bytes
+actually stored in <var>buffer</var> after a successful operation. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_mpi_aprint</b> (<var>enum&nbsp;gcry_mpi_format&nbsp;format<!-- /@w -->, unsigned&nbsp;char&nbsp;**buffer<!-- /@w -->, size_t&nbsp;*nbytes<!-- /@w -->, const&nbsp;gcry_mpi_t&nbsp;a<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005faprint-215"></a></var><br>
+<blockquote>
+        <p>Convert the MPI <var>a</var> into an external representation described by
+<var>format</var> (see above) and store it in a newly allocated buffer which
+address will be stored in the variable <var>buffer</var> points to.  The
+number of bytes stored in this buffer will be stored in the variable
+<var>nbytes</var> points to, unless <var>nbytes</var> is <code>NULL</code>.
+
+        <p>Even if <var>nbytes</var> is zero, the function allocates at least one byte
+and store a zero there.  Thus with formats <code>GCRYMPI_FMT_STD</code> and
+<code>GCRYMPI_FMT_USG</code> the caller may safely set a returned length of
+0 to 1 to represent a zero as a 1 byte string.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: void <b>gcry_mpi_dump</b> (<var>const&nbsp;gcry_mpi_t&nbsp;a<!-- /@w --></var>)<var><a name="index-gcry_005fmpi_005fdump-216"></a></var><br>
+<blockquote>
+        <p>Dump the value of <var>a</var> in a format suitable for debugging to
+Libgcrypt's logging stream.  Note that one leading space but no trailing
+space or linefeed will be printed.  It is okay to pass <code>NULL</code> for
+<var>a</var>. 
+</p></blockquote></div>
+
+   </body></html>
+

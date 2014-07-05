@@ -1,0 +1,314 @@
+<html lang="en">
+<head>
+<title>Controlling the library - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Generalities.html#Generalities" title="Generalities">
+<link rel="next" href="Error-Handling.html#Error-Handling" title="Error Handling">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Controlling-the-library"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Error-Handling.html#Error-Handling">Error Handling</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Generalities.html#Generalities">Generalities</a>
+<hr>
+</div>
+
+<h3 class="section">3.1 Controlling the library</h3>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_control</b> (<var>enum gcry_ctl_cmds cmd, ...</var>)<var><a name="index-gcry_005fcontrol-7"></a></var><br>
+<blockquote>
+        <p>This function can be used to influence the general behavior of
+Libgcrypt in several ways.  Depending on <var>cmd</var>, more
+arguments can or have to be provided.
+
+          <dl>
+<dt><code>GCRYCTL_ENABLE_M_GUARD; Arguments: none</code><dd>This command enables the built-in memory guard.  It must not be used
+to activate the memory guard after the memory management has already
+been used; therefore it can ONLY be used before
+<code>gcry_check_version</code>.  Note that the memory guard is NOT used
+when the user of the library has set his own memory management
+callbacks.
+
+          <br><dt><code>GCRYCTL_ENABLE_QUICK_RANDOM; Arguments: none</code><dd>This command inhibits the use the very secure random quality level
+(<code>GCRY_VERY_STRONG_RANDOM</code>) and degrades all request down to
+<code>GCRY_STRONG_RANDOM</code>.  In general this is not recommended.  However,
+for some applications the extra quality random Libgcrypt tries to create
+is not justified and this option may help to get better performance. 
+Please check with a crypto expert whether this option can be used for
+your application.
+
+          <p>This option can only be used at initialization time.
+
+          <br><dt><code>GCRYCTL_DUMP_RANDOM_STATS; Arguments: none</code><dd>This command dumps random number generator related statistics to the
+library's logging stream.
+
+          <br><dt><code>GCRYCTL_DUMP_MEMORY_STATS; Arguments: none</code><dd>This command dumps memory management related statistics to the library's
+logging stream.
+
+          <br><dt><code>GCRYCTL_DUMP_SECMEM_STATS; Arguments: none</code><dd>This command dumps secure memory management related statistics to the
+library's logging stream.
+
+          <br><dt><code>GCRYCTL_DROP_PRIVS; Arguments: none</code><dd>This command disables the use of secure memory and drops the privileges
+of the current process.  This command has not much use; the suggested way
+to disable secure memory is to use <code>GCRYCTL_DISABLE_SECMEM</code> right
+after initialization.
+
+          <br><dt><code>GCRYCTL_DISABLE_SECMEM; Arguments: none</code><dd>This command disables the use of secure memory.  If this command is
+used in FIPS mode, FIPS mode will be disabled and the function
+<code>gcry_fips_mode_active</code> returns false.  However, in Enforced FIPS
+mode this command has no effect at all.
+
+          <p>Many applications do not require secure memory, so they should disable
+it right away.  This command should be executed right after
+<code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_DISABLE_LOCKED_SECMEM; Arguments: none</code><dd>This command disables the use of the mlock call for secure memory. 
+Disabling the use of mlock may for example be done if an encrypted
+swap space is in use.  This command should be executed right after
+<code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_DISABLE_PRIV_DROP; Arguments: none</code><dd>This command sets a global flag to tell the secure memory subsystem
+that it shall not drop privileges after secure memory has been
+allocated.  This command is commonly used right after
+<code>gcry_check_version</code> but may also be used right away at program
+startup.  It won't have an effect after the secure memory pool has
+been initialized.  WARNING: A process running setuid(root) is a severe
+security risk.  Processes making use of Libgcrypt or other complex
+code should drop these extra privileges as soon as possible.  If this
+command has been used the caller is responsible for dropping the
+privileges.
+
+          <br><dt><code>GCRYCTL_INIT_SECMEM; Arguments: int nbytes</code><dd>This command is used to allocate a pool of secure memory and thus
+enabling the use of secure memory.  It also drops all extra privileges
+the process has (i.e. if it is run as setuid (root)).  If the argument
+<var>nbytes</var> is 0, secure memory will be disabled.  The minimum amount
+of secure memory allocated is currently 16384 bytes; you may thus use a
+value of 1 to request that default size.
+
+          <br><dt><code>GCRYCTL_TERM_SECMEM; Arguments: none</code><dd>This command zeroises the secure memory and destroys the handler.  The
+secure memory pool may not be used anymore after running this command. 
+If the secure memory pool as already been destroyed, this command has
+no effect.  Applications might want to run this command from their
+exit handler to make sure that the secure memory gets properly
+destroyed.  This command is not necessarily thread-safe but that
+should not be needed in cleanup code.  It may be called from a signal
+handler.
+
+          <br><dt><code>GCRYCTL_DISABLE_SECMEM_WARN; Arguments: none</code><dd>Disable warning messages about problems with the secure memory
+subsystem. This command should be run right after
+<code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_SUSPEND_SECMEM_WARN; Arguments: none</code><dd>Postpone warning messages from the secure memory subsystem. 
+See <a href="sample_002duse_002dsuspend_002dsecmem.html#sample_002duse_002dsuspend_002dsecmem">the initialization example</a>, on how to
+use it.
+
+          <br><dt><code>GCRYCTL_RESUME_SECMEM_WARN; Arguments: none</code><dd>Resume warning messages from the secure memory subsystem. 
+See <a href="sample_002duse_002dresume_002dsecmem.html#sample_002duse_002dresume_002dsecmem">the initialization example</a>, on how to
+use it.
+
+          <br><dt><code>GCRYCTL_USE_SECURE_RNDPOOL; Arguments: none</code><dd>This command tells the PRNG to store random numbers in secure memory. 
+This command should be run right after <code>gcry_check_version</code> and not
+later than the command GCRYCTL_INIT_SECMEM.  Note that in FIPS mode the
+secure memory is always used.
+
+          <br><dt><code>GCRYCTL_SET_RANDOM_SEED_FILE; Arguments: const char *filename</code><dd>This command specifies the file, which is to be used as seed file for
+the PRNG.  If the seed file is registered prior to initialization of the
+PRNG, the seed file's content (if it exists and seems to be valid) is
+fed into the PRNG pool.  After the seed file has been registered, the
+PRNG can be signalled to write out the PRNG pool's content into the seed
+file with the following command.
+
+          <br><dt><code>GCRYCTL_UPDATE_RANDOM_SEED_FILE; Arguments: none</code><dd>Write out the PRNG pool's content into the registered seed file.
+
+          <p>Multiple instances of the applications sharing the same random seed file
+can be started in parallel, in which case they will read out the same
+pool and then race for updating it (the last update overwrites earlier
+updates).  They will differentiate only by the weak entropy that is
+added in read_seed_file based on the PID and clock, and up to 16 bytes
+of weak random non-blockingly.  The consequence is that the output of
+these different instances is correlated to some extent.  In a perfect
+attack scenario, the attacker can control (or at least guess) the PID
+and clock of the application, and drain the system's entropy pool to
+reduce the "up to 16 bytes" above to 0.  Then the dependencies of the
+initial states of the pools are completely known.  Note that this is not
+an issue if random of <code>GCRY_VERY_STRONG_RANDOM</code> quality is
+requested as in this case enough extra entropy gets mixed.  It is also
+not an issue when using Linux (rndlinux driver), because this one
+guarantees to read full 16 bytes from /dev/urandom and thus there is no
+way for an attacker without kernel access to control these 16 bytes.
+
+          <br><dt><code>GCRYCTL_CLOSE_RANDOM_DEVICE; Arguments: none</code><dd>Try to close the random device.  If on Unix system you call fork(),
+the child process does no call exec(), and you do not intend to use
+Libgcrypt in the child, it might be useful to use this control code to
+close the inherited file descriptors of the random device.  If
+Libgcrypt is later used again by the child, the device will be
+re-opened.  On non-Unix systems this control code is ignored.
+
+          <br><dt><code>GCRYCTL_SET_VERBOSITY; Arguments: int level</code><dd>This command sets the verbosity of the logging.  A level of 0 disables
+all extra logging whereas positive numbers enable more verbose logging. 
+The level may be changed at any time but be aware that no memory
+synchronization is done so the effect of this command might not
+immediately show up in other threads.  This command may even be used
+prior to <code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_SET_DEBUG_FLAGS; Arguments: unsigned int flags</code><dd>Set the debug flag bits as given by the argument.  Be aware that that no
+memory synchronization is done so the effect of this command might not
+immediately show up in other threads.  The debug flags are not
+considered part of the API and thus may change without notice.  As of
+now bit 0 enables debugging of cipher functions and bit 1 debugging of
+multi-precision-integers.  This command may even be used prior to
+<code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_CLEAR_DEBUG_FLAGS; Arguments: unsigned int flags</code><dd>Set the debug flag bits as given by the argument.  Be aware that that no
+memory synchronization is done so the effect of this command might not
+immediately show up in other threads.  This command may even be used
+prior to <code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_DISABLE_INTERNAL_LOCKING; Arguments: none</code><dd>This command does nothing.  It exists only for backward compatibility.
+
+          <br><dt><code>GCRYCTL_ANY_INITIALIZATION_P; Arguments: none</code><dd>This command returns true if the library has been basically initialized. 
+Such a basic initialization happens implicitly with many commands to get
+certain internal subsystems running.  The common and suggested way to
+do this basic initialization is by calling gcry_check_version.
+
+          <br><dt><code>GCRYCTL_INITIALIZATION_FINISHED; Arguments: none</code><dd>This command tells the library that the application has finished the
+initialization.
+
+          <br><dt><code>GCRYCTL_INITIALIZATION_FINISHED_P; Arguments: none</code><dd>This command returns true if the command<br>
+GCRYCTL_INITIALIZATION_FINISHED has already been run.
+
+          <br><dt><code>GCRYCTL_SET_THREAD_CBS; Arguments: struct ath_ops *ath_ops</code><dd>This command registers a thread-callback structure. 
+See <a href="Multi_002dThreading.html#Multi_002dThreading">Multi-Threading</a>.
+
+          <br><dt><code>GCRYCTL_FAST_POLL; Arguments: none</code><dd>Run a fast random poll.
+
+          <br><dt><code>GCRYCTL_SET_RNDEGD_SOCKET; Arguments: const char *filename</code><dd>This command may be used to override the default name of the EGD socket
+to connect to.  It may be used only during initialization as it is not
+thread safe.  Changing the socket name again is not supported.  The
+function may return an error if the given filename is too long for a
+local socket name.
+
+          <p>EGD is an alternative random gatherer, used only on systems lacking a
+proper random device.
+
+          <br><dt><code>GCRYCTL_PRINT_CONFIG; Arguments: FILE *stream</code><dd>This command dumps information pertaining to the configuration of the
+library to the given stream.  If NULL is given for <var>stream</var>, the log
+system is used.  This command may be used before the initialization has
+been finished but not before a <code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_OPERATIONAL_P; Arguments: none</code><dd>This command returns true if the library is in an operational state. 
+This information makes only sense in FIPS mode.  In contrast to other
+functions, this is a pure test function and won't put the library into
+FIPS mode or change the internal state.  This command may be used before
+the initialization has been finished but not before a <code>gcry_check_version</code>.
+
+          <br><dt><code>GCRYCTL_FIPS_MODE_P; Arguments: none</code><dd>This command returns true if the library is in FIPS mode.  Note, that
+this is no indication about the current state of the library.  This
+command may be used before the initialization has been finished but not
+before a <code>gcry_check_version</code>.  An application may use this command or
+the convenience macro below to check whether FIPS mode is actually
+active.
+
+          <div class="defun">
+&mdash; Function: int <b>gcry_fips_mode_active</b> (<var>void</var>)<var><a name="index-gcry_005ffips_005fmode_005factive-8"></a></var><br>
+<blockquote>
+                  <p>Returns true if the FIPS mode is active.  Note that this is
+implemented as a macro. 
+</p></blockquote></div>
+
+          <br><dt><code>GCRYCTL_FORCE_FIPS_MODE; Arguments: none</code><dd>Running this command puts the library into FIPS mode.  If the library is
+already in FIPS mode, a self-test is triggered and thus the library will
+be put into operational state.  This command may be used before a call
+to <code>gcry_check_version</code> and that is actually the recommended way to let an
+application switch the library into FIPS mode.  Note that Libgcrypt will
+reject an attempt to switch to fips mode during or after the initialization.
+
+          <br><dt><code>GCRYCTL_SET_ENFORCED_FIPS_FLAG; Arguments: none</code><dd>Running this command sets the internal flag that puts the library into
+the enforced FIPS mode during the FIPS mode initialization.  This command
+does not affect the library if the library is not put into the FIPS mode and
+it must be used before any other libgcrypt library calls that initialize
+the library such as <code>gcry_check_version</code>. Note that Libgcrypt will
+reject an attempt to switch to the enforced fips mode during or after
+the initialization.
+
+          <br><dt><code>GCRYCTL_SET_PREFERRED_RNG_TYPE; Arguments: int</code><dd>These are advisory commands to select a certain random number
+generator.  They are only advisory because libraries may not know what
+an application actually wants or vice versa.  Thus Libgcrypt employs a
+priority check to select the actually used RNG.  If an applications
+selects a lower priority RNG but a library requests a higher priority
+RNG Libgcrypt will switch to the higher priority RNG.  Applications
+and libraries should use these control codes before
+<code>gcry_check_version</code>.  The available generators are:
+               <dl>
+<dt><code>GCRY_RNG_TYPE_STANDARD</code><dd>A conservative standard generator based on the &ldquo;Continuously Seeded
+Pseudo Random Number Generator&rdquo; designed by Peter Gutmann. 
+<br><dt><code>GCRY_RNG_TYPE_FIPS</code><dd>A deterministic random number generator conforming to he document
+&ldquo;NIST-Recommended Random Number Generator Based on ANSI X9.31
+Appendix A.2.4 Using the 3-Key Triple DES and AES Algorithms&rdquo;
+(2005-01-31).  This implementation uses the AES variant. 
+<br><dt><code>GCRY_RNG_TYPE_SYSTEM</code><dd>A wrapper around the system's native RNG.  On Unix system these are
+usually the /dev/random and /dev/urandom devices. 
+</dl>
+          The default is <code>GCRY_RNG_TYPE_STANDARD</code> unless FIPS mode as been
+enabled; in which case <code>GCRY_RNG_TYPE_FIPS</code> is used and locked
+against further changes.
+
+          <br><dt><code>GCRYCTL_GETT_CURRENT_RNG_TYPE; Arguments: int *</code><dd>This command stores the type of the currently used RNG as an integer
+value at the provided address.
+
+          <br><dt><code>GCRYCTL_SELFTEST; Arguments: none</code><dd>This may be used at anytime to have the library run all implemented
+self-tests.  It works in standard and in FIPS mode.  Returns 0 on
+success or an error code on failure.
+
+          <br><dt><code>GCRYCTL_DISABLE_HWF; Arguments: const char *name</code><dd>
+Libgcrypt detects certain features of the CPU at startup time.  For
+performance tests it is sometimes required not to use such a feature. 
+This option may be used to disable a certain feature; i.e. Libgcrypt
+behaves as if this feature has not been detected.  Note that the
+detection code might be run if the feature has been disabled.  This
+command must be used at initialization time; i.e. before calling
+<code>gcry_check_version</code>.
+
+        </dl>
+
+     </blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- *******************  Errors  **************************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

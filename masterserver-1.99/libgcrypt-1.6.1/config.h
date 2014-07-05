@@ -16,7 +16,7 @@
 #define BUILD_REVISION ""
 
 /* The time this package was configured for a build */
-#define BUILD_TIMESTAMP "2014-06-23T14:58+0000"
+#define BUILD_TIMESTAMP "2014-06-27T18:51+0000"
 
 /* configure did not test for endianess */
 /* #undef DISABLED_ENDIAN_CHECK */
@@ -26,7 +26,7 @@
 #define EGD_SOCKET_NAME ""
 
 /* Enable support for Intel AES-NI instructions. */
-/* #undef ENABLE_AESNI_SUPPORT */
+#define ENABLE_AESNI_SUPPORT 1
 
 /* Enable support for Intel AVX2 instructions. */
 #define ENABLE_AVX2_SUPPORT 1
@@ -38,16 +38,16 @@
 #define ENABLE_DRNG_SUPPORT 1
 
 /* Define to support an HMAC based integrity check */
-#define ENABLE_HMAC_BINARY_CHECK 1
+/* #undef ENABLE_HMAC_BINARY_CHECK */
 
 /* Enable support for ARM NEON instructions. */
 /* #undef ENABLE_NEON_SUPPORT */
 
 /* Enable support for the PadLock engine. */
-/* #undef ENABLE_PADLOCK_SUPPORT */
+#define ENABLE_PADLOCK_SUPPORT 1
 
 /* Enable support for Intel PCLMUL instructions. */
-/* #undef ENABLE_PCLMUL_SUPPORT */
+#define ENABLE_PCLMUL_SUPPORT 1
 
 /* Define to use the GNU C visibility attribute. */
 #define GCRY_USE_VISIBILITY 1

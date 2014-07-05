@@ -1,0 +1,148 @@
+<html lang="en">
+<head>
+<title>General cipher functions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Symmetric-cryptography.html#Symmetric-cryptography" title="Symmetric cryptography">
+<link rel="prev" href="Working-with-cipher-handles.html#Working-with-cipher-handles" title="Working with cipher handles">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="General-cipher-functions"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Working-with-cipher-handles.html#Working-with-cipher-handles">Working with cipher handles</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Symmetric-cryptography.html#Symmetric-cryptography">Symmetric cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">5.4 General cipher functions</h3>
+
+<p>To work with the algorithms, several functions are available to map
+algorithm names to the internal identifiers, as well as ways to
+retrieve information about an algorithm or the current cipher context.
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_cipher_algo_info</b> (<var>int algo, int what, void *buffer, size_t *nbytes</var>)<var><a name="index-gcry_005fcipher_005falgo_005finfo-91"></a></var><br>
+<blockquote>
+        <p>This function is used to retrieve information on a specific algorithm. 
+You pass the cipher algorithm ID as <var>algo</var> and the type of
+information requested as <var>what</var>. The result is either returned as
+the return code of the function or copied to the provided <var>buffer</var>
+whose allocated length must be available in an integer variable with the
+address passed in <var>nbytes</var>.  This variable will also receive the
+actual used length of the buffer.
+
+        <p>Here is a list of supported codes for <var>what</var>:
+
+     <!-- begin constants for gcry_cipher_algo_info -->
+          <dl>
+<dt><code>GCRYCTL_GET_KEYLEN:</code><dd>Return the length of the key. If the algorithm supports multiple key
+lengths, the maximum supported value is returned.  The length is
+returned as number of octets (bytes) and not as number of bits in
+<var>nbytes</var>; <var>buffer</var> must be zero.  Note that it is usually
+better to use the convenience function
+<code>gcry_cipher_get_algo_keylen</code>.
+
+          <br><dt><code>GCRYCTL_GET_BLKLEN:</code><dd>Return the block length of the algorithm.  The length is returned as a
+number of octets in <var>nbytes</var>; <var>buffer</var> must be zero.  Note
+that it is usually better to use the convenience function
+<code>gcry_cipher_get_algo_blklen</code>.
+
+          <br><dt><code>GCRYCTL_TEST_ALGO:</code><dd>Returns <code>0</code> when the specified algorithm is available for use. 
+<var>buffer</var> and <var>nbytes</var> must be zero.
+
+        </dl>
+        <!-- end constants for gcry_cipher_algo_info -->
+
+        </blockquote></div>
+   <!-- end gcry_cipher_algo_info -->
+
+<div class="defun">
+&mdash; Function: size_t <b>gcry_cipher_get_algo_keylen</b> (<var>algo</var>)<var><a name="index-gcry_005fcipher_005fget_005falgo_005fkeylen-92"></a></var><br>
+<blockquote>
+        <p>This function returns length of the key for algorithm <var>algo</var>.  If
+the algorithm supports multiple key lengths, the maximum supported key
+length is returned.  On error <code>0</code> is returned.  The key length is
+returned as number of octets.
+
+        <p>This is a convenience functions which should be preferred over
+<code>gcry_cipher_algo_info</code> because it allows for proper type
+checking. 
+</p></blockquote></div>
+   <!-- end gcry_cipher_get_algo_keylen -->
+
+<div class="defun">
+&mdash; Function: size_t <b>gcry_cipher_get_algo_blklen</b> (<var>int algo</var>)<var><a name="index-gcry_005fcipher_005fget_005falgo_005fblklen-93"></a></var><br>
+<blockquote>
+        <p>This functions returns the block-length of the algorithm <var>algo</var>
+counted in octets.  On error <code>0</code> is returned.
+
+        <p>This is a convenience functions which should be preferred over
+<code>gcry_cipher_algo_info</code> because it allows for proper type
+checking. 
+</p></blockquote></div>
+   <!-- end gcry_cipher_get_algo_blklen -->
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_cipher_algo_name</b> (<var>int algo</var>)<var><a name="index-gcry_005fcipher_005falgo_005fname-94"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_algo_name</code> returns a string with the name of the
+cipher algorithm <var>algo</var>.  If the algorithm is not known or another
+error occurred, the string <code>"?"</code> is returned.  This function should
+not be used to test for the availability of an algorithm. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_cipher_map_name</b> (<var>const char *name</var>)<var><a name="index-gcry_005fcipher_005fmap_005fname-95"></a></var><br>
+<blockquote>
+        <p><code>gcry_cipher_map_name</code> returns the algorithm identifier for the
+cipher algorithm described by the string <var>name</var>.  If this algorithm
+is not available <code>0</code> is returned. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_cipher_mode_from_oid</b> (<var>const char *string</var>)<var><a name="index-gcry_005fcipher_005fmode_005ffrom_005foid-96"></a></var><br>
+<blockquote>
+        <p>Return the cipher mode associated with an <acronym>ASN.1</acronym> object
+identifier.  The object identifier is expected to be in the
+<acronym>IETF</acronym>-style dotted decimal notation.  The function returns
+<code>0</code> for an unknown object identifier or when no mode is associated
+with it. 
+</p></blockquote></div>
+
+<!-- ********************************************************** -->
+<!-- *******************  Public Key  ************************* -->
+<!-- ********************************************************** -->
+   </body></html>
+

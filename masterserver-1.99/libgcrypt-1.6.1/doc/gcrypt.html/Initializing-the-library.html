@@ -1,0 +1,158 @@
+<html lang="en">
+<head>
+<title>Initializing the library - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preparation.html#Preparation" title="Preparation">
+<link rel="prev" href="Building-sources-using-Automake.html#Building-sources-using-Automake" title="Building sources using Automake">
+<link rel="next" href="Multi_002dThreading.html#Multi_002dThreading" title="Multi-Threading">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Initializing-the-library"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Multi_002dThreading.html#Multi_002dThreading">Multi-Threading</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Building-sources-using-Automake.html#Building-sources-using-Automake">Building sources using Automake</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preparation.html#Preparation">Preparation</a>
+<hr>
+</div>
+
+<h3 class="section">2.4 Initializing the library</h3>
+
+<p>Before the library can be used, it must initialize itself.  This is
+achieved by invoking the function <code>gcry_check_version</code> described
+below.
+
+   <p>Also, it is often desirable to check that the version of
+Libgcrypt used is indeed one which fits all requirements. 
+Even with binary compatibility, new features may have been introduced,
+but due to problem with the dynamic linker an old version may actually
+be used.  So you may want to check that the version is okay right
+after program startup.
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_check_version</b> (<var>const char *req_version</var>)<var><a name="index-gcry_005fcheck_005fversion-2"></a></var><br>
+<blockquote>
+        <p>The function <code>gcry_check_version</code> initializes some subsystems used
+by Libgcrypt and must be invoked before any other function in the
+library, with the exception of the <code>GCRYCTL_SET_THREAD_CBS</code> command
+(called via the <code>gcry_control</code> function). 
+See <a href="Multi_002dThreading.html#Multi_002dThreading">Multi-Threading</a>.
+
+        <p>Furthermore, this function returns the version number of the library. 
+It can also verify that the version number is higher than a certain
+required version number <var>req_version</var>, if this value is not a null
+pointer. 
+</p></blockquote></div>
+
+   <p>Libgcrypt uses a concept known as secure memory, which is a region of
+memory set aside for storing sensitive data.  Because such memory is a
+scarce resource, it needs to be setup in advanced to a fixed size. 
+Further, most operating systems have special requirements on how that
+secure memory can be used.  For example, it might be required to install
+an application as &ldquo;setuid(root)&rdquo; to allow allocating such memory. 
+Libgcrypt requires a sequence of initialization steps to make sure that
+this works correctly.  The following examples show the necessary steps.
+
+   <p>If you don't have a need for secure memory, for example if your
+application does not use secret keys or other confidential data or it
+runs in a controlled environment where key material floating around in
+memory is not a problem, you should initialize Libgcrypt this way:
+
+<pre class="example">       /* Version check should be the very first call because it
+          makes sure that important subsystems are intialized. */
+       if (!gcry_check_version (GCRYPT_VERSION))
+         {
+           fputs ("libgcrypt version mismatch\n", stderr);
+           exit (2);
+         }
+     
+       /* Disable secure memory.  */
+       gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
+     
+       /* ... If required, other initialization goes here.  */
+     
+       /* Tell Libgcrypt that initialization has completed. */
+       gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+</pre>
+   <p>If you have to protect your keys or other information in memory against
+being swapped out to disk and to enable an automatic overwrite of used
+and freed memory, you need to initialize Libgcrypt this way:
+
+<pre class="example">       /* Version check should be the very first call because it
+          makes sure that important subsystems are initialized. */
+       if (!gcry_check_version (GCRYPT_VERSION))
+         {
+           fputs ("libgcrypt version mismatch\n", stderr);
+           exit (2);
+         }
+     
+     <a name="sample_002duse_002dsuspend_002dsecmem"></a>/* We don't want to see any warnings, e.g. because we have not yet
+          parsed program options which might be used to suppress such
+          warnings. */
+       gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+     
+       /* ... If required, other initialization goes here.  Note that the
+          process might still be running with increased privileges and that
+          the secure memory has not been initialized.  */
+     
+       /* Allocate a pool of 16k secure memory.  This make the secure memory
+          available and also drops privileges where needed.  */
+       gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+     
+     <a name="sample_002duse_002dresume_002dsecmem"></a>/* It is now okay to let Libgcrypt complain when there was/is
+          a problem with the secure memory. */
+       gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+     
+       /* ... If required, other initialization goes here.  */
+     
+       /* Tell Libgcrypt that initialization has completed. */
+       gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+</pre>
+   <p>It is important that these initialization steps are not done by a
+library but by the actual application.  A library using Libgcrypt might
+want to check for finished initialization using:
+
+<pre class="example">       if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P))
+         {
+           fputs ("libgcrypt has not been initialized\n", stderr);
+           abort ();
+         }
+</pre>
+   <p>Instead of terminating the process, the library may instead print a
+warning and try to initialize Libgcrypt itself.  See also the section on
+multi-threading below for more pitfalls.
+
+   </body></html>
+

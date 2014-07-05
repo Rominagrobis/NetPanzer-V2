@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+<title>Available cipher modes - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Symmetric-cryptography.html#Symmetric-cryptography" title="Symmetric cryptography">
+<link rel="prev" href="Available-ciphers.html#Available-ciphers" title="Available ciphers">
+<link rel="next" href="Working-with-cipher-handles.html#Working-with-cipher-handles" title="Working with cipher handles">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Available-cipher-modes"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Working-with-cipher-handles.html#Working-with-cipher-handles">Working with cipher handles</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Available-ciphers.html#Available-ciphers">Available ciphers</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Symmetric-cryptography.html#Symmetric-cryptography">Symmetric cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">5.2 Available cipher modes</h3>
+
+     <dl>
+<dt><code>GCRY_CIPHER_MODE_NONE</code><dd>No mode specified.  This should not be used.  The only exception is that
+if Libgcrypt is not used in FIPS mode and if any debug flag has been
+set, this mode may be used to bypass the actual encryption.
+
+     <br><dt><code>GCRY_CIPHER_MODE_ECB</code><dd><a name="index-ECB_002c-Electronic-Codebook-mode-66"></a>Electronic Codebook mode.
+
+     <br><dt><code>GCRY_CIPHER_MODE_CFB</code><dd><a name="index-CFB_002c-Cipher-Feedback-mode-67"></a>Cipher Feedback mode.  The shift size equals the block size of the
+cipher (e.g. for AES it is CFB-128).
+
+     <br><dt><code>GCRY_CIPHER_MODE_CBC</code><dd><a name="index-CBC_002c-Cipher-Block-Chaining-mode-68"></a>Cipher Block Chaining mode.
+
+     <br><dt><code>GCRY_CIPHER_MODE_STREAM</code><dd>Stream mode, only to be used with stream cipher algorithms.
+
+     <br><dt><code>GCRY_CIPHER_MODE_OFB</code><dd><a name="index-OFB_002c-Output-Feedback-mode-69"></a>Output Feedback mode.
+
+     <br><dt><code>GCRY_CIPHER_MODE_CTR</code><dd><a name="index-CTR_002c-Counter-mode-70"></a>Counter mode.
+
+     <br><dt><code>GCRY_CIPHER_MODE_AESWRAP</code><dd><a name="index-AES_002dWrap-mode-71"></a>This mode is used to implement the AES-Wrap algorithm according to
+RFC-3394.  It may be used with any 128 bit block length algorithm,
+however the specs require one of the 3 AES algorithms.  These special
+conditions apply: If <code>gcry_cipher_setiv</code> has not been used the
+standard IV is used; if it has been used the lower 64 bit of the IV
+are used as the Alternative Initial Value.  On encryption the provided
+output buffer must be 64 bit (8 byte) larger than the input buffer;
+in-place encryption is still allowed.  On decryption the output buffer
+may be specified 64 bit (8 byte) shorter than then input buffer.  As
+per specs the input length must be at least 128 bits and the length
+must be a multiple of 64 bits.
+
+     <br><dt><code>GCRY_CIPHER_MODE_CCM</code><dd><a name="index-CCM_002c-Counter-with-CBC_002dMAC-mode-72"></a>Counter with CBC-MAC mode is an Authenticated Encryption with
+Associated Data (AEAD) block cipher mode, which is specified in
+'NIST Special Publication 800-38C' and RFC 3610.
+
+     <br><dt><code>GCRY_CIPHER_MODE_GCM</code><dd><a name="index-GCM_002c-Galois_002fCounter-Mode-73"></a>Galois/Counter Mode (GCM) is an Authenticated Encryption with
+Associated Data (AEAD) block cipher mode, which is specified in
+'NIST Special Publication 800-38D'.
+
+</dl>
+
+   </body></html>
+

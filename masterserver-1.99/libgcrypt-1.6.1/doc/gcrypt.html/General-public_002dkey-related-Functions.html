@@ -1,0 +1,385 @@
+<html lang="en">
+<head>
+<title>General public-key related Functions - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Public-Key-cryptography.html#Public-Key-cryptography" title="Public Key cryptography">
+<link rel="prev" href="Cryptographic-Functions.html#Cryptographic-Functions" title="Cryptographic Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="General-public-key-related-Functions"></a>
+<a name="General-public_002dkey-related-Functions"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Cryptographic-Functions.html#Cryptographic-Functions">Cryptographic Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Public-Key-cryptography.html#Public-Key-cryptography">Public Key cryptography</a>
+<hr>
+</div>
+
+<h3 class="section">6.4 General public-key related Functions</h3>
+
+<p class="noindent">A couple of utility functions are available to retrieve the length of
+the key, map algorithm identifiers and perform sanity checks:
+
+<div class="defun">
+&mdash; Function: const char * <b>gcry_pk_algo_name</b> (<var>int algo</var>)<var><a name="index-gcry_005fpk_005falgo_005fname-114"></a></var><br>
+<blockquote>
+        <p>Map the public key algorithm id <var>algo</var> to a string representation of
+the algorithm name.  For unknown algorithms this functions returns the
+string <code>"?"</code>.  This function should not be used to test for the
+availability of an algorithm. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_pk_map_name</b> (<var>const char *name</var>)<var><a name="index-gcry_005fpk_005fmap_005fname-115"></a></var><br>
+<blockquote>
+        <p>Map the algorithm <var>name</var> to a public key algorithm Id.  Returns 0 if
+the algorithm name is not known. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: int <b>gcry_pk_test_algo</b> (<var>int algo</var>)<var><a name="index-gcry_005fpk_005ftest_005falgo-116"></a></var><br>
+<blockquote>
+        <p>Return 0 if the public key algorithm <var>algo</var> is available for use. 
+Note that this is implemented as a macro. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: unsigned int <b>gcry_pk_get_nbits</b> (<var>gcry_sexp_t key</var>)<var><a name="index-gcry_005fpk_005fget_005fnbits-117"></a></var><br>
+<blockquote>
+        <p>Return what is commonly referred as the key length for the given
+public or private in <var>key</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: unsigned char * <b>gcry_pk_get_keygrip</b> (<var>gcry_sexp_t&nbsp;key<!-- /@w -->, unsigned&nbsp;char&nbsp;*array<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fget_005fkeygrip-118"></a></var><br>
+<blockquote>
+        <p>Return the so called "keygrip" which is the SHA-1 hash of the public key
+parameters expressed in a way depended on the algorithm.  <var>array</var>
+must either provide space for 20 bytes or be <code>NULL</code>. In the latter
+case a newly allocated array of that size is returned.  On success a
+pointer to the newly allocated space or to <var>array</var> is returned. 
+<code>NULL</code> is returned to indicate an error which is most likely an
+unknown algorithm or one where a "keygrip" has not yet been defined. 
+The function accepts public or secret keys in <var>key</var>. 
+</p></blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_testkey</b> (<var>gcry_sexp_t key</var>)<var><a name="index-gcry_005fpk_005ftestkey-119"></a></var><br>
+<blockquote>
+        <p>Return zero if the private key <var>key</var> is `sane', an error code otherwise. 
+Note that it is not possible to check the `saneness' of a public key.
+
+        </blockquote></div>
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_algo_info</b> (<var>int&nbsp;algo<!-- /@w -->, int&nbsp;what<!-- /@w -->, void&nbsp;*buffer<!-- /@w -->, size_t&nbsp;*nbytes<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005falgo_005finfo-120"></a></var><br>
+<blockquote>
+        <p>Depending on the value of <var>what</var> return various information about
+the public key algorithm with the id <var>algo</var>.  Note that the
+function returns <code>-1</code> on error and the actual error code must be
+retrieved using the function <code>gcry_errno</code>.  The currently defined
+values for <var>what</var> are:
+
+          <dl>
+<dt><code>GCRYCTL_TEST_ALGO:</code><dd>Return 0 if the specified algorithm is available for use. 
+<var>buffer</var> must be <code>NULL</code>, <var>nbytes</var> may be passed as
+<code>NULL</code> or point to a variable with the required usage of the
+algorithm. This may be 0 for "don't care" or the bit-wise OR of these
+flags:
+
+               <dl>
+<dt><code>GCRY_PK_USAGE_SIGN</code><dd>Algorithm is usable for signing. 
+<br><dt><code>GCRY_PK_USAGE_ENCR</code><dd>Algorithm is usable for encryption. 
+</dl>
+
+          <p>Unless you need to test for the allowed usage, it is in general better
+to use the macro gcry_pk_test_algo instead.
+
+          <br><dt><code>GCRYCTL_GET_ALGO_USAGE:</code><dd>Return the usage flags for the given algorithm.  An invalid algorithm
+return 0.  Disabled algorithms are ignored here because we
+want to know whether the algorithm is at all capable of a certain usage.
+
+          <br><dt><code>GCRYCTL_GET_ALGO_NPKEY</code><dd>Return the number of elements the public key for algorithm <var>algo</var>
+consist of.  Return 0 for an unknown algorithm.
+
+          <br><dt><code>GCRYCTL_GET_ALGO_NSKEY</code><dd>Return the number of elements the private key for algorithm <var>algo</var>
+consist of.  Note that this value is always larger than that of the
+public key.  Return 0 for an unknown algorithm.
+
+          <br><dt><code>GCRYCTL_GET_ALGO_NSIGN</code><dd>Return the number of elements a signature created with the algorithm
+<var>algo</var> consists of.  Return 0 for an unknown algorithm or for an
+algorithm not capable of creating signatures.
+
+          <br><dt><code>GCRYCTL_GET_ALGO_NENC</code><dd>Return the number of elements a encrypted message created with the algorithm
+<var>algo</var> consists of.  Return 0 for an unknown algorithm or for an
+algorithm not capable of encryption. 
+</dl>
+
+     <p class="noindent">Please note that parameters not required should be passed as <code>NULL</code>. 
+</p></blockquote></div>
+   <!-- end gcry_pk_algo_info -->
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_ctl</b> (<var>int&nbsp;cmd<!-- /@w -->, void&nbsp;*buffer<!-- /@w -->, size_t&nbsp;buflen<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fctl-121"></a></var><br>
+<blockquote>
+        <p>This is a general purpose function to perform certain control
+operations.  <var>cmd</var> controls what is to be done. The return value is
+0 for success or an error code.  Currently supported values for
+<var>cmd</var> are:
+
+          <dl>
+<dt><code>GCRYCTL_DISABLE_ALGO</code><dd>Disable the algorithm given as an algorithm id in <var>buffer</var>. 
+<var>buffer</var> must point to an <code>int</code> variable with the algorithm
+id and <var>buflen</var> must have the value <code>sizeof (int)</code>.  This
+fucntion is not thread safe and should thus be used before any other
+threads are started.
+
+        </dl>
+        </p></blockquote></div>
+   <!-- end gcry_pk_ctl -->
+
+<p class="noindent">Libgcrypt also provides a function to generate public key
+pairs:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pk_genkey</b> (<var>gcry_sexp_t&nbsp;*r_key<!-- /@w -->, gcry_sexp_t&nbsp;parms<!-- /@w --></var>)<var><a name="index-gcry_005fpk_005fgenkey-122"></a></var><br>
+<blockquote>
+        <p>This function create a new public key pair using information given in
+the S-expression <var>parms</var> and stores the private and the public key
+in one new S-expression at the address given by <var>r_key</var>.  In case of
+an error, <var>r_key</var> is set to <code>NULL</code>.  The return code is 0 for
+success or an error code otherwise.
+
+     <p class="noindent">Here is an example for <var>parms</var> to create an 2048 bit RSA key:
+
+     <pre class="example">          (genkey
+            (rsa
+              (nbits 4:2048)))
+</pre>
+        <p class="noindent">To create an Elgamal key, substitute "elg" for "rsa" and to create a DSA
+key use "dsa".  Valid ranges for the key length depend on the
+algorithms; all commonly used key lengths are supported.  Currently
+supported parameters are:
+
+          <dl>
+<dt><code>nbits</code><dd>This is always required to specify the length of the key.  The
+argument is a string with a number in C-notation.  The value should be
+a multiple of 8.  Note that the S-expression syntax requires that a
+number is prefixed with its string length; thus the <code>4:</code> in the
+above example.
+
+          <br><dt><code>curve </code><var>name</var><dd>For ECC a named curve may be used instead of giving the number of
+requested bits.  This allows to request a specific curve to override a
+default selection Libgcrypt would have taken if <code>nbits</code> has been
+given.  The available names are listed with the description of the ECC
+public key parameters.
+
+          <br><dt><code>rsa-use-e </code><var>value</var><dd>This is only used with RSA to give a hint for the public exponent. The
+<var>value</var> will be used as a base to test for a usable exponent. Some
+values are special:
+
+               <dl>
+<dt>&lsquo;<samp><span class="samp">0</span></samp>&rsquo;<dd>Use a secure and fast value.  This is currently the number 41. 
+<br><dt>&lsquo;<samp><span class="samp">1</span></samp>&rsquo;<dd>Use a value as required by some crypto policies.  This is currently
+the number 65537. 
+<br><dt>&lsquo;<samp><span class="samp">2</span></samp>&rsquo;<dd>Reserved
+<br><dt>&lsquo;<samp><span class="samp">&gt; 2</span></samp>&rsquo;<dd>Use the given value. 
+</dl>
+
+          <p class="noindent">If this parameter is not used, Libgcrypt uses for historic reasons
+65537.
+
+          <br><dt><code>qbits </code><var>n</var><dd>This is only meanigful for DSA keys.  If it is given the DSA key is
+generated with a Q parameyer of size <var>n</var> bits.  If it is not given
+or zero Q is deduced from NBITS in this way:
+               <dl>
+<dt>&lsquo;<samp><span class="samp">512 &lt;= N &lt;= 1024</span></samp>&rsquo;<dd>Q = 160
+<br><dt>&lsquo;<samp><span class="samp">N = 2048</span></samp>&rsquo;<dd>Q = 224
+<br><dt>&lsquo;<samp><span class="samp">N = 3072</span></samp>&rsquo;<dd>Q = 256
+<br><dt>&lsquo;<samp><span class="samp">N = 7680</span></samp>&rsquo;<dd>Q = 384
+<br><dt>&lsquo;<samp><span class="samp">N = 15360</span></samp>&rsquo;<dd>Q = 512
+</dl>
+          Note that in this case only the values for N, as given in the table,
+are allowed.  When specifying Q all values of N in the range 512 to
+15680 are valid as long as they are multiples of 8.
+
+          <br><dt><code>domain </code><var>list</var><dd>This is only meaningful for DLP algorithms.  If specified keys are
+generated with domain parameters taken from this list.  The exact
+format of this parameter depends on the actual algorithm.  It is
+currently only implemented for DSA using this format:
+
+          <pre class="example">               (genkey
+                 (dsa
+                   (domain
+                     (p <var>p-mpi</var>)
+                     (q <var>q-mpi</var>)
+                     (g <var>q-mpi</var>))))
+</pre>
+          <p><code>nbits</code> and <code>qbits</code> may not be specified because they are
+derived from the domain parameters.
+
+          <br><dt><code>derive-parms </code><var>list</var><dd>This is currently only implemented for RSA and DSA keys.  It is not
+allowed to use this together with a <code>domain</code> specification.  If
+given, it is used to derive the keys using the given parameters.
+
+          <p>If given for an RSA key the X9.31 key generation algorithm is used
+even if libgcrypt is not in FIPS mode.  If given for a DSA key, the
+FIPS 186 algorithm is used even if libgcrypt is not in FIPS mode.
+
+          <pre class="example">               (genkey
+                 (rsa
+                   (nbits 4:1024)
+                   (rsa-use-e 1:3)
+                   (derive-parms
+                     (Xp1 #1A1916DDB29B4EB7EB6732E128#)
+                     (Xp2 #192E8AAC41C576C822D93EA433#)
+                     (Xp  #D8CD81F035EC57EFE822955149D3BFF70C53520D
+                           769D6D76646C7A792E16EBD89FE6FC5B605A6493
+                           39DFC925A86A4C6D150B71B9EEA02D68885F5009
+                           B98BD984#)
+                     (Xq1 #1A5CF72EE770DE50CB09ACCEA9#)
+                     (Xq2 #134E4CAA16D2350A21D775C404#)
+                     (Xq  #CC1092495D867E64065DEE3E7955F2EBC7D47A2D
+                           7C9953388F97DDDC3E1CA19C35CA659EDC2FC325
+                           6D29C2627479C086A699A49C4C9CEE7EF7BD1B34
+                           321DE34A#))))
+</pre>
+          <pre class="example">               (genkey
+                 (dsa
+                   (nbits 4:1024)
+                   (derive-parms
+                     (seed <var>seed-mpi</var>))))
+</pre>
+          <br><dt><code>flags </code><var>flaglist</var><dd>This is preferred way to define flags.  <var>flaglist</var> may contain any
+number of flags.  See above for a specification of these flags.
+
+          <p>Here is an example on how to create a key using curve Ed25519 with the
+ECDSA signature algorithm.  Note that the use of ECDSA with that curve
+is in general not recommended.
+          <pre class="example">               (genkey
+                 (ecc
+                   (flags transient-key)))
+</pre>
+          <br><dt><code>transient-key</code><dt><code>use-x931</code><dt><code>use-fips186</code><dt><code>use-fips186-2</code><dd>These are deprecated ways to set a flag with that name; see above for
+a description of each flag.
+
+        </dl>
+        <!-- end table of parameters -->
+
+     <p class="noindent">The key pair is returned in a format depending on the algorithm.  Both
+private and public keys are returned in one container and may be
+accompanied by some miscellaneous information.
+
+     <p class="noindent">Here are two examples; the first for Elgamal and the second for
+elliptic curve key generation:
+
+     <pre class="example">          (key-data
+            (public-key
+              (elg
+                (p <var>p-mpi</var>)
+                (g <var>g-mpi</var>)
+                (y <var>y-mpi</var>)))
+            (private-key
+              (elg
+                (p <var>p-mpi</var>)
+                (g <var>g-mpi</var>)
+                (y <var>y-mpi</var>)
+                (x <var>x-mpi</var>)))
+            (misc-key-info
+              (pm1-factors <var>n1 n2 ... nn</var>))
+</pre>
+        <pre class="example">          (key-data
+            (public-key
+              (ecc
+                (curve Ed25519)
+                (flags eddsa)
+                (q <var>q-value</var>)))
+            (private-key
+              (ecc
+                (curve Ed25519)
+                (flags eddsa)
+                (q <var>q-value</var>)
+                (d <var>d-value</var>))))
+</pre>
+        <p class="noindent">As you can see, some of the information is duplicated, but this
+provides an easy way to extract either the public or the private key. 
+Note that the order of the elements is not defined, e.g. the private
+key may be stored before the public key. <var>n1 n2 ... nn</var> is a list
+of prime numbers used to composite <var>p-mpi</var>; this is in general not
+a very useful information and only available if the key generation
+algorithm provides them. 
+</p></blockquote></div>
+   <!-- end gcry_pk_genkey -->
+
+<p class="noindent">Future versions of Libgcrypt will have extended versions of the public
+key interfaced which will take an additional context to allow for
+pre-computations, special operations, and other optimization.  As a
+first step a new function is introduced to help using the ECC
+algorithms in new ways:
+
+<div class="defun">
+&mdash; Function: gcry_error_t <b>gcry_pubkey_get_sexp</b> (<var>gcry_sexp_t&nbsp;*r_sexp<!-- /@w -->, int&nbsp;mode<!-- /@w -->, gcry_ctx_t&nbsp;ctx<!-- /@w --></var>)<var><a name="index-gcry_005fpubkey_005fget_005fsexp-123"></a></var><br>
+<blockquote>
+        <p>Return an S-expression representing the context <var>ctx</var>.  Depending
+on the state of that context, the S-expression may either be a public
+key, a private key or any other object used with public key
+operations.  On success 0 is returned and a new S-expression is stored
+at <var>r_sexp</var>; on error an error code is returned and NULL is stored
+at <var>r_sexp</var>.  <var>mode</var> must be one of:
+
+          <dl>
+<dt><code>0</code><dd>Decide what to return depending on the context.  For example if the
+private key parameter is available a private key is returned, if not a
+public key is returned.
+
+          <br><dt><code>GCRY_PK_GET_PUBKEY</code><dd>Return the public key even if the context has the private key
+parameter.
+
+          <br><dt><code>GCRY_PK_GET_SECKEY</code><dd>Return the private key or the error <code>GPG_ERR_NO_SECKEY</code> if it is
+not possible. 
+</dl>
+
+        <p>As of now this function supports only certain ECC operations because a
+context object is right now only defined for ECC.  Over time this
+function will be extended to cover more algorithms.
+
+        </blockquote></div>
+   <!-- end gcry_pubkey_get_sexp -->
+
+<!-- ********************************************************** -->
+<!-- *******************  Hash Functions  ********************* -->
+<!-- ********************************************************** -->
+   </body></html>
+

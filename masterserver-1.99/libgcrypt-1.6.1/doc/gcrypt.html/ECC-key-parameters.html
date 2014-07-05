@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+<title>ECC key parameters - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Used-S_002dexpressions.html#Used-S_002dexpressions" title="Used S-expressions">
+<link rel="prev" href="DSA-key-parameters.html#DSA-key-parameters" title="DSA key parameters">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="ECC-key-parameters"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="DSA-key-parameters.html#DSA-key-parameters">DSA key parameters</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Used-S_002dexpressions.html#Used-S_002dexpressions">Used S-expressions</a>
+<hr>
+</div>
+
+<h4 class="subsection">6.2.3 ECC key parameters</h4>
+
+<p><a name="ecc_005fkeyparam"></a>An ECC private key is described by this S-expression:
+
+<pre class="example">     (private-key
+       (ecc
+         (p <var>p-mpi</var>)
+         (a <var>a-mpi</var>)
+         (b <var>b-mpi</var>)
+         (g <var>g-point</var>)
+         (n <var>n-mpi</var>)
+         (q <var>q-point</var>)
+         (d <var>d-mpi</var>)))
+</pre>
+     <dl>
+<dt><var>p-mpi</var><dd>Prime specifying the field GF(p). 
+<br><dt><var>a-mpi</var><dt><var>b-mpi</var><dd>The two coefficients of the Weierstrass equation y^2 = x^3 + ax + b
+<br><dt><var>g-point</var><dd>Base point g. 
+<br><dt><var>n-mpi</var><dd>Order of g
+<br><dt><var>q-point</var><dd>The point representing the public key Q = dG. 
+<br><dt><var>d-mpi</var><dd>The private key d
+</dl>
+
+   <p>All point values are encoded in standard format; Libgcrypt does in
+general only support uncompressed points, thus the first byte needs to
+be <code>0x04</code>.  However &ldquo;EdDSA&rdquo; describes its own compression
+scheme which is used by default.
+
+   <p>The public key is similar with "private-key" replaced by "public-key"
+and no <var>d-mpi</var>.
+
+   <p>If the domain parameters are well-known, the name of this curve may be
+used.  For example
+
+<pre class="example">     (private-key
+       (ecc
+         (curve "NIST P-192")
+         (q <var>q-point</var>)
+         (d <var>d-mpi</var>)))
+</pre>
+   <p>Note that <var>q-point</var> is optional for a private key.  The
+<code>curve</code> parameter may be given in any case and is used to replace
+missing parameters.
+
+<p class="noindent">Currently implemented curves are:
+     <dl>
+<dt><code>NIST P-192</code><dt><code>1.2.840.10045.3.1.1</code><dt><code>prime192v1</code><dt><code>secp192r1</code><dd>The NIST 192 bit curve, its OID, X9.62 and SECP aliases.
+
+     <br><dt><code>NIST P-224</code><dt><code>secp224r1</code><dd>The NIST 224 bit curve and its SECP alias.
+
+     <br><dt><code>NIST P-256</code><dt><code>1.2.840.10045.3.1.7</code><dt><code>prime256v1</code><dt><code>secp256r1</code><dd>The NIST 256 bit curve, its OID, X9.62 and SECP aliases.
+
+     <br><dt><code>NIST P-384</code><dt><code>secp384r1</code><dd>The NIST 384 bit curve and its SECP alias.
+
+     <br><dt><code>NIST P-521</code><dt><code>secp521r1</code><dd>The NIST 521 bit curve and its SECP alias.
+
+   </dl>
+   As usual the OIDs may optionally be prefixed with the string <code>OID.</code>
+or <code>oid.</code>.
+
+   </body></html>
+

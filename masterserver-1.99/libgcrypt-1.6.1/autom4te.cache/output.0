@@ -18313,7 +18313,7 @@ esac
 #
 # Provide information about the build.
 #
-BUILD_REVISION=""
+BUILD_REVISION="185bf2a"
 
 
 cat >>confdefs.h <<_ACEOF
@@ -18322,7 +18322,7 @@ _ACEOF
 
 
 BUILD_FILEVERSION=`echo "$VERSION" | sed 's/\([0-9.]*\).*/\1./;s/\./,/g'`
-BUILD_FILEVERSION="${BUILD_FILEVERSION}0"
+BUILD_FILEVERSION="${BUILD_FILEVERSION}6235"
 
 
 BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M+0000 2>/dev/null || date`

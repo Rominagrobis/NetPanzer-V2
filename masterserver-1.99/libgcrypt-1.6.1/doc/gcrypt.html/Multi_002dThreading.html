@@ -1,0 +1,163 @@
+<html lang="en">
+<head>
+<title>Multi-Threading - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preparation.html#Preparation" title="Preparation">
+<link rel="prev" href="Initializing-the-library.html#Initializing-the-library" title="Initializing the library">
+<link rel="next" href="Enabling-FIPS-mode.html#Enabling-FIPS-mode" title="Enabling FIPS mode">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Multi-Threading"></a>
+<a name="Multi_002dThreading"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Enabling-FIPS-mode.html#Enabling-FIPS-mode">Enabling FIPS mode</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Initializing-the-library.html#Initializing-the-library">Initializing the library</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preparation.html#Preparation">Preparation</a>
+<hr>
+</div>
+
+<h3 class="section">2.5 Multi-Threading</h3>
+
+<p>As mentioned earlier, the Libgcrypt library is
+thread-safe if you adhere to the following requirements:
+
+     <ul>
+<li>If your application is multi-threaded, you must set the thread support
+callbacks with the <code>GCRYCTL_SET_THREAD_CBS</code> command
+<strong>before</strong> any other function in the library.
+
+     <p>This is easy enough if you are indeed writing an application using
+Libgcrypt.  It is rather problematic if you are writing a library
+instead.  Here are some tips what to do if you are writing a library:
+
+     <p>If your library requires a certain thread package, just initialize
+Libgcrypt to use this thread package.  If your library supports multiple
+thread packages, but needs to be configured, you will have to
+implement a way to determine which thread package the application
+wants to use with your library anyway.  Then configure Libgcrypt to use
+this thread package.
+
+     <p>If your library is fully reentrant without any special support by a
+thread package, then you are lucky indeed.  Unfortunately, this does
+not relieve you from doing either of the two above, or use a third
+option.  The third option is to let the application initialize Libgcrypt
+for you.  Then you are not using Libgcrypt transparently, though.
+
+     <p>As if this was not difficult enough, a conflict may arise if two
+libraries try to initialize Libgcrypt independently of each others, and
+both such libraries are then linked into the same application.  To
+make it a bit simpler for you, this will probably work, but only if
+both libraries have the same requirement for the thread package.  This
+is currently only supported for the non-threaded case, GNU Pth and
+pthread.
+
+     <p>If you use pthread and your applications forks and does not directly
+call exec (even calling stdio functions), all kind of problems may
+occur.  Future versions of Libgcrypt will try to cleanup using
+pthread_atfork but even that may lead to problems.  This is a common
+problem with almost all applications using pthread and fork.
+
+     <p>Note that future versions of Libgcrypt will drop this flexible thread
+support and instead only support the platforms standard thread
+implementation.
+
+     <li>The function <code>gcry_check_version</code> must be called before any other
+function in the library, except the <code>GCRYCTL_SET_THREAD_CBS</code>
+command (called via the <code>gcry_control</code> function), because it
+initializes the thread support subsystem in Libgcrypt.  To
+achieve this in multi-threaded programs, you must synchronize the
+memory with respect to other threads that also want to use
+Libgcrypt.  For this, it is sufficient to call
+<code>gcry_check_version</code> before creating the other threads using
+Libgcrypt<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>.
+
+     <li>Just like the function <code>gpg_strerror</code>, the function
+<code>gcry_strerror</code> is not thread safe.  You have to use
+<code>gpg_strerror_r</code> instead.
+
+   </ul>
+
+   <p>Libgcrypt contains convenient macros, which define the
+necessary thread callbacks for PThread and for GNU Pth:
+
+     <dl>
+<dt><code>GCRY_THREAD_OPTION_PTH_IMPL</code><dd>
+This macro defines the following (static) symbols:
+<code>gcry_pth_init</code>, <code>gcry_pth_mutex_init</code>,
+<code>gcry_pth_mutex_destroy</code>, <code>gcry_pth_mutex_lock</code>,
+<code>gcry_pth_mutex_unlock</code>, <code>gcry_pth_read</code>,
+<code>gcry_pth_write</code>, <code>gcry_pth_select</code>,
+<code>gcry_pth_waitpid</code>, <code>gcry_pth_accept</code>,
+<code>gcry_pth_connect</code>, <code>gcry_threads_pth</code>.
+
+     <p>After including this macro, <code>gcry_control()</code> shall be used with a
+command of <code>GCRYCTL_SET_THREAD_CBS</code> in order to register the
+thread callback structure named &ldquo;gcry_threads_pth&rdquo;.  Example:
+
+     <pre class="smallexample">            ret = gcry_control (GCRYCTL_SET_THREAD_CBS, &amp;gcry_threads_pth);
+</pre>
+     <br><dt><code>GCRY_THREAD_OPTION_PTHREAD_IMPL</code><dd>
+This macro defines the following (static) symbols:
+<code>gcry_pthread_mutex_init</code>, <code>gcry_pthread_mutex_destroy</code>,
+<code>gcry_pthread_mutex_lock</code>, <code>gcry_pthread_mutex_unlock</code>,
+<code>gcry_threads_pthread</code>.
+
+     <p>After including this macro, <code>gcry_control()</code> shall be used with a
+command of <code>GCRYCTL_SET_THREAD_CBS</code> in order to register the
+thread callback structure named &ldquo;gcry_threads_pthread&rdquo;.  Example:
+
+     <pre class="smallexample">            ret = gcry_control (GCRYCTL_SET_THREAD_CBS, &amp;gcry_threads_pthread);
+</pre>
+     </dl>
+
+   <p>Note that these macros need to be terminated with a semicolon.  Keep
+in mind that these are convenient macros for C programmers; C++
+programmers might have to wrap these macros in an &ldquo;extern C&rdquo; body.
+
+   <div class="footnote">
+<hr>
+<h4>Notes de bas de page</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> At least this is true for POSIX threads,
+as <code>pthread_create</code> is a function that synchronizes memory with
+respects to other threads.  There are many functions which have this
+property, a complete list can be found in POSIX, IEEE Std 1003.1-2003,
+Base Definitions, Issue 6, in the definition of the term &ldquo;Memory
+Synchronization&rdquo;.  For other thread packages, more relaxed or more
+strict rules may apply.</p>
+
+   <hr></div>
+
+   </body></html>
+

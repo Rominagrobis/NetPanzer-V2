@@ -1,0 +1,13 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux)
+ restricted \write18 enabled.
+entering extended mode
+(./txiversion.tex
+(/home/jeff/development/Netpanzer-V2/masterserver-1.99/libgcrypt-1.6.1/build-au
+x/texinfo.tex Loading texinfo [version 2006-10-04.17]: Basics, pdf, fonts,
+page headings, tables, conditionals, indexing, sectioning, toc, environments,
+defuns, macros, cross references, insertions,
+(/usr/share/texmf/tex/generic/epsf/epsf.tex
+This is `epsf.tex' v2.7.4 <14 February 2011>
+) localization, and turning on texinfo input format.) )
+No pages of output.
+Transcript written on txiversion.log.

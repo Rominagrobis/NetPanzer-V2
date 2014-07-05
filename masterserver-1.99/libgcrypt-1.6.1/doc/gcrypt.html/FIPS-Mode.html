@@ -1,0 +1,270 @@
+<html lang="en">
+<head>
+<title>FIPS Mode - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Self_002dTests.html#Self_002dTests" title="Self-Tests">
+<link rel="next" href="Library-Copying.html#Library-Copying" title="Library Copying">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="FIPS-Mode"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Library-Copying.html#Library-Copying">Library Copying</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Self_002dTests.html#Self_002dTests">Self-Tests</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="appendix">Annexe B Description of the FIPS Mode</h2>
+
+<p>This appendix gives detailed information pertaining to the FIPS mode. 
+In particular, the changes to the standard mode and the finite state
+machine are described.  The self-tests required in this mode are
+described in the appendix on self-tests.
+
+<!--  -->
+<h3 class="section">B.1 Restrictions in FIPS Mode</h3>
+
+<p class="noindent">If Libgcrypt is used in FIPS mode these restrictions are effective:
+
+     <ul>
+<li>The cryptographic algorithms are restricted to this list:
+
+          <dl>
+<dt>GCRY_CIPHER_3DES<dd>3 key EDE Triple-DES symmetric encryption. 
+<br><dt>GCRY_CIPHER_AES128<dd>AES 128 bit symmetric encryption. 
+<br><dt>GCRY_CIPHER_AES192<dd>AES 192 bit symmetric encryption. 
+<br><dt>GCRY_CIPHER_AES256<dd>AES 256 bit symmetric encryption. 
+<br><dt>GCRY_MD_SHA1<dd>SHA-1 message digest. 
+<br><dt>GCRY_MD_SHA224<dd>SHA-224 message digest. 
+<br><dt>GCRY_MD_SHA256<dd>SHA-256 message digest. 
+<br><dt>GCRY_MD_SHA384<dd>SHA-384 message digest. 
+<br><dt>GCRY_MD_SHA512<dd>SHA-512 message digest. 
+<br><dt>GCRY_MD_SHA1,GCRY_MD_FLAG_HMAC<dd>HMAC using a SHA-1 message digest. 
+<br><dt>GCRY_MD_SHA224,GCRY_MD_FLAG_HMAC<dd>HMAC using a SHA-224 message digest. 
+<br><dt>GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC<dd>HMAC using a SHA-256 message digest. 
+<br><dt>GCRY_MD_SHA384,GCRY_MD_FLAG_HMAC<dd>HMAC using a SHA-384 message digest. 
+<br><dt>GCRY_MD_SHA512,GCRY_MD_FLAG_HMAC<dd>HMAC using a SHA-512 message digest. 
+<br><dt>GCRY_PK_RSA<dd>RSA encryption and signing. 
+<br><dt>GCRY_PK_DSA<dd>DSA signing. 
+</dl>
+
+     <p>Note that the CRC algorithms are not considered cryptographic algorithms
+and thus are in addition available.
+
+     <li>RSA key generation refuses to create a key with a keysize of
+less than 1024 bits.
+
+     <li>DSA key generation refuses to create a key with a keysize other
+than 1024 bits.
+
+     <li>The <code>transient-key</code> flag for RSA and DSA key generation is ignored.
+
+     <li>Support for the VIA Padlock engine is disabled.
+
+     <li>FIPS mode may only be used on systems with a /dev/random device. 
+Switching into FIPS mode on other systems will fail at runtime.
+
+     <li>Saving and loading a random seed file is ignored.
+
+     <li>An X9.31 style random number generator is used in place of the
+large-pool-CSPRNG generator.
+
+     <li>The command <code>GCRYCTL_ENABLE_QUICK_RANDOM</code> is ignored.
+
+     <li>Message digest debugging is disabled.
+
+     <li>All debug output related to cryptographic data is suppressed.
+
+     <li>On-the-fly self-tests are not performed, instead self-tests are run
+before entering operational state.
+
+     <li>The function <code>gcry_set_allocation_handler</code> may not be used.  If
+it is used Libgcrypt disables FIPS mode unless Enforced FIPS mode is
+enabled, in which case Libgcrypt will enter the error state.
+
+     <li>The digest algorithm MD5 may not be used.  If it is used Libgcrypt
+disables FIPS mode unless Enforced FIPS mode is enabled, in which case
+Libgcrypt will enter the error state.
+
+     <li>In Enforced FIPS mode the command <code>GCRYCTL_DISABLE_SECMEM</code> is
+ignored.  In standard FIPS mode it disables FIPS mode.
+
+     <li>A handler set by <code>gcry_set_outofcore_handler</code> is ignored. 
+<li>A handler set by <code>gcry_set_fatalerror_handler</code> is ignored.
+
+   </ul>
+
+   <p>Note that when we speak about disabling FIPS mode, it merely means
+that the function <code>gcry_fips_mode_active</code> returns false; it does
+not mean that any non FIPS algorithms are allowed.
+
+<!-- ******************************************** -->
+<h3 class="section">B.2 FIPS Finite State Machine</h3>
+
+<p>The FIPS mode of libgcrypt implements a finite state machine (FSM) using
+8 states (see <a href="tbl_003afips_002dstates.html#tbl_003afips_002dstates">tbl:fips-states</a>) and checks at runtime that only valid
+transitions (see <a href="tbl_003afips_002dstate_002dtransitions.html#tbl_003afips_002dstate_002dtransitions">tbl:fips-state-transitions</a>) may happen.
+
+   <div class="float">
+<a name="fig_003afips_002dfsm"></a>
+<div align="center"><img src="fips-fsm.png" alt="FIPS FSM Diagram"></div>
+   <p><strong class="float-caption">Figure B.1: FIPS mode state diagram</strong></p></div>
+
+   <div class="float">
+<a name="tbl_003afips_002dstates"></a>
+States used by the FIPS FSM:
+     <dl>
+<dt>Power-Off<dd>Libgcrypt is not runtime linked to another application.  This usually
+means that the library is not loaded into main memory.  This state is
+documentation only.
+
+     <br><dt>Power-On<dd>Libgcrypt is loaded into memory and API calls may be made.  Compiler
+introduced constructor functions may be run.  Note that Libgcrypt does
+not implement any arbitrary constructor functions to be called by the
+operating system
+
+     <br><dt>Init<dd>The Libgcrypt initialization functions are performed and the library has
+not yet run any self-test.
+
+     <br><dt>Self-Test<dd>Libgcrypt is performing self-tests.
+
+     <br><dt>Operational<dd>Libgcrypt is in the operational state and all interfaces may be used.
+
+     <br><dt>Error<dd>Libgrypt is in the error state.  When calling any FIPS relevant
+interfaces they either return an error (<code>GPG_ERR_NOT_OPERATIONAL</code>)
+or put Libgcrypt into the Fatal-Error state and won't return.
+
+     <br><dt>Fatal-Error<dd>Libgcrypt is in a non-recoverable error state and
+will automatically transit into the  Shutdown state.
+
+     <br><dt>Shutdown<dd>Libgcrypt is about to be terminated and removed from the memory. The
+application may at this point still running cleanup handlers.
+
+   </dl>
+   <p><strong class="float-caption">Table B.1: FIPS mode states</strong></p></div>
+
+   <div class="float">
+<a name="tbl_003afips_002dstate_002dtransitions"></a>
+The valid state transitions (see <a href="fig_003afips_002dfsm.html#fig_003afips_002dfsm">Figure B.1</a>) are:
+     <dl>
+<dt><code>1</code><dd>Power-Off to Power-On is implicitly done by the OS loading Libgcrypt as
+a shared library and having it linked to an application.
+
+     <br><dt><code>2</code><dd>Power-On to Init is triggered by the application calling the
+Libgcrypt initialization function <code>gcry_check_version</code>.
+
+     <br><dt><code>3</code><dd>Init to Self-Test is either triggered by a dedicated API call or implicit
+by invoking a libgrypt service controlled by the FSM.
+
+     <br><dt><code>4</code><dd>Self-Test to Operational is triggered after all self-tests passed
+successfully.
+
+     <br><dt><code>5</code><dd>Operational to Shutdown is an artificial state without any direct action
+in Libgcrypt.  When reaching the Shutdown state the library is
+deinitialized and can't return to any other state again.
+
+     <br><dt><code>6</code><dd>Shutdown to Power-off is the process of removing Libgcrypt from the
+computer's memory.  For obvious reasons the Power-Off state can't be
+represented within Libgcrypt and thus this transition is for
+documentation only.
+
+     <br><dt><code>7</code><dd>Operational to Error is triggered if Libgcrypt detected an application
+error which can't be returned to the caller but still allows Libgcrypt
+to properly run.  In the Error state all FIPS relevant interfaces return
+an error code.
+
+     <br><dt><code>8</code><dd>Error to Shutdown is similar to the Operational to Shutdown transition
+(5).
+
+     <br><dt><code>9</code><dd>Error to Fatal-Error is triggered if Libgrypt detects an fatal error
+while already being in Error state.
+
+     <br><dt><code>10</code><dd>Fatal-Error to Shutdown is automatically entered by Libgcrypt
+after having reported the error.
+
+     <br><dt><code>11</code><dd>Power-On to Shutdown is an artificial state to document that Libgcrypt
+has not ye been initialized but the process is about to terminate.
+
+     <br><dt><code>12</code><dd>Power-On to Fatal-Error will be triggered if certain Libgcrypt functions
+are used without having reached the Init state.
+
+     <br><dt><code>13</code><dd>Self-Test to Fatal-Error is triggered by severe errors in Libgcrypt while
+running self-tests.
+
+     <br><dt><code>14</code><dd>Self-Test to Error is triggered by a failed self-test.
+
+     <br><dt><code>15</code><dd>Operational to Fatal-Error is triggered if Libcrypt encountered a
+non-recoverable error.
+
+     <br><dt><code>16</code><dd>Operational to Self-Test is triggered if the application requested to run
+the self-tests again.
+
+     <br><dt><code>17</code><dd>Error to Self-Test is triggered if the application has requested to run
+self-tests to get to get back into operational state after an error.
+
+     <br><dt><code>18</code><dd>Init to Error is triggered by errors in the initialization code.
+
+     <br><dt><code>19</code><dd>Init to Fatal-Error is triggered by non-recoverable errors in the
+initialization code.
+
+     <br><dt><code>20</code><dd>Error to Error is triggered by errors while already in the Error
+state.
+
+   </dl>
+   <p><strong class="float-caption">Table B.2: FIPS mode state transitions</strong></p></div>
+
+<!-- ******************************************** -->
+<h3 class="section">B.3 FIPS Miscellaneous Information</h3>
+
+<p>Libgcrypt does not do any key management on itself; the application
+needs to care about it.  Keys which are passed to Libgcrypt should be
+allocated in secure memory as available with the functions
+<code>gcry_malloc_secure</code> and <code>gcry_calloc_secure</code>.  By calling
+<code>gcry_free</code> on this memory, the memory and thus the keys are
+overwritten with zero bytes before releasing the memory.
+
+   <p>For use with the random number generator, Libgcrypt generates 3
+internal keys which are stored in the encryption contexts used by the
+RNG.  These keys are stored in secure memory for the lifetime of the
+process.  Application are required to use <code>GCRYCTL_TERM_SECMEM</code>
+before process termination.  This will zero out the entire secure
+memory and thus also the encryption contexts with these keys.
+
+<!-- ********************************************************** -->
+<!-- *************  Appendices (license etc.)  **************** -->
+<!-- ********************************************************** -->
+   </body></html>
+

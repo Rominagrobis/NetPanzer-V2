@@ -111,8 +111,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = compat
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am clock.c \
-	getpid.c $(top_srcdir)/build-aux/depcomp
+DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am getpid.c \
+	clock.c $(top_srcdir)/build-aux/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gpg-error.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/lock.m4 \

@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+<title>Progress handler - The Libgcrypt Reference Manual</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The Libgcrypt Reference Manual">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Handler-Functions.html#Handler-Functions" title="Handler Functions">
+<link rel="next" href="Allocation-handler.html#Allocation-handler" title="Allocation handler">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This manual is for Libgcrypt
+(version 1.6.1, 29 January 2014),
+which is GNU's library of cryptographic building blocks.
+
+Copyright (C) 2000, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2011, 2012 Free Software Foundation, Inc.
+
+Copyright (C) 2012, 2013 g10 Code GmbH
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU General Public License as
+     published by the Free Software Foundation; either version 2 of the
+     License, or (at your option) any later version. The text of the
+     license can be found in the section entitled ``GNU General Public
+     License''.
+   -->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Progress-handler"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Allocation-handler.html#Allocation-handler">Allocation handler</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Handler-Functions.html#Handler-Functions">Handler Functions</a>
+<hr>
+</div>
+
+<h3 class="section">4.1 Progress handler</h3>
+
+<p>It is often useful to retrieve some feedback while long running
+operations are performed.
+
+<div class="defun">
+&mdash; Data type: <b>gcry_handler_progress_t</b><var><a name="index-gcry_005fhandler_005fprogress_005ft-31"></a></var><br>
+<blockquote><p>Progress handler functions have to be of the type
+<code>gcry_handler_progress_t</code>, which is defined as:
+
+        <p><code>void (*gcry_handler_progress_t) (void *, const char *, int, int, int)</code>
+</p></blockquote></div>
+
+   <p>The following function may be used to register a handler function for
+this purpose.
+
+<div class="defun">
+&mdash; Function: void <b>gcry_set_progress_handler</b> (<var>gcry_handler_progress_t cb, void *cb_data</var>)<var><a name="index-gcry_005fset_005fprogress_005fhandler-32"></a></var><br>
+<blockquote>
+        <p>This function installs <var>cb</var> as the `Progress handler' function. 
+It may be used only during initialization.  <var>cb</var> must be defined
+as follows:
+
+     <pre class="example">          void
+          my_progress_handler (void *<var>cb_data</var>, const char *<var>what</var>,
+                               int <var>printchar</var>, int <var>current</var>, int <var>total</var>)
+          {
+            /* Do something.  */
+          }
+</pre>
+        <p>A description of the arguments of the progress handler function follows.
+
+          <dl>
+<dt><var>cb_data</var><dd>The argument provided in the call to <code>gcry_set_progress_handler</code>. 
+<br><dt><var>what</var><dd>A string identifying the type of the progress output.  The following
+values for <var>what</var> are defined:
+
+               <dl>
+<dt><code>need_entropy</code><dd>Not enough entropy is available.  <var>total</var> holds the number of
+required bytes.
+
+               <br><dt><code>wait_dev_random</code><dd>Waiting to re-open a random device.  <var>total</var> gives the number of
+seconds until the next try.
+
+               <br><dt><code>primegen</code><dd>Values for <var>printchar</var>:
+                    <dl>
+<dt><code>\n</code><dd>Prime generated. 
+<br><dt><code>!</code><dd>Need to refresh the pool of prime numbers. 
+<br><dt><code>&lt;, &gt;</code><dd>Number of bits adjusted. 
+<br><dt><code>^</code><dd>Searching for a generator. 
+<br><dt><code>.</code><dd>Fermat test on 10 candidates failed. 
+<br><dt><code>:</code><dd>Restart with a new random value. 
+<br><dt><code>+</code><dd>Rabin Miller test passed. 
+</dl>
+
+          </dl>
+
+        </dl>
+        </p></blockquote></div>
+
+   </body></html>
+

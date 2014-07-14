@@ -41,3 +41,64 @@ First stage : MasterServer
           <6> config     (to be defined)
           
           
+ Communication :
+  
+    I think of different stage of communication.  I name them 'ring'
+    
+    'ring 0'     is master to master communication at port 6060 
+    'ring 1'     is master to game server communication at port 7070 
+    'ring 1 bis' is old style communication keep for compatibility (port 28900)
+    'ring 2'     is client to master at port 3040 for new style clients
+    'ring 2 bis' is client to master at port 3030 for old style compatibility
+    
+    each ring run in a separate thread. 
+    
+    
+ Configuration :
+ 
+   While it will be a great idea to run in a chroot environment, the config file named by default 'master.ini' may in the user home directory
+   in $HOME/.netpanzer/config
+   
+   Syntax : 
+   
+     Sections are identified by [] 
+     
+     options are pair of key and value separated by the sign '=' and followed by a semicolon (;)
+     
+     comments are identified by # 
+     
+     
+ typical configuration file : 
+ 
+   [network]
+     adress = *;            # this mean all interface can be used
+     mmport = 6060;         # communication port with other masters
+     smport = 7070;         # communication port with game servers
+     cmport = 3040;         # communication port with game clients
+     osport = 28900;        # communication port old style
+     ocport = 3030;         # communication port old style
+   [database]
+     type = mysql;          # the only database supported first, may be other can be used in the futur
+     base = netpanzer;      # the name of the database to store infos
+     user = npv2;           # name of user of this database (don't use root for security purpose)
+     pass = npv2;	    # password for this user in mysql
+     dbip = 127.0.0.1;      # where the database is located (127.0.0.1 is localhost)
+     dbport = 3306;         # port to comminicate with database engine (default)
+     
+   # variables and values are same as old version of masterserver but can change in the futur  
+   [game]
+     server-alive-timeout = 720;         # time until a server is considered dead
+     client-request-timeout = 30;        # time until a clientrequest is aborted
+     connection-limit=10 = 10;           # limit of concurrently handled requests
+     masterserver-heartbeat-interval=300 # Interval other masterservers are notified that we're still alive
+     masterserver-password=xxx           # Password for masterserver heartbeats
+     
+     
+   #   write-back-neighbour-list=no is no more used
+   
+   [system]
+     logfile = /var/log/masterserver.log; # be carefull with the default value in case of chroot ..
+     servercachefile = /var/cache/masterserver/neighboors;
+     pidfile = /var/run/masterserver.pid; # usefull if other programwant to know if mster still running
+     
+     

@@ -25,16 +25,29 @@
 
 #include <stdio.h>
 
+
 #include "../include/iniparser.h"
 #include "../include/dictionary.h"
 
+#include "../include/master.h"
+
 int main(int argc, char **argv)
 {
+	
+	int i;
 	/* first thing to do is to read the arguments */
 	
-	
-	
-	/* second is toread the config file and set globales variables */
+    for ( i = 1; i <= argc -1; i++) { 
+		  printf (" %d  --  %s \n " , i, argv[i]);
+        switch (argv[i]) {
+			case '-h': printf("%s \n\n", help); exit;
+			
+		)		
+
+	}  
+		
+	printf("%s \n \n", help);	
+	/* second is thread the config file and set globales variables */
 	
 	
 	/* thirst .. create and start the master thread */
